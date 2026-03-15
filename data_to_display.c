@@ -5,7 +5,7 @@
 //#include "timer_queue.h"
 #include "data_to_display.h"
 
-volatile uint8_t data_for_display[NUMBER_DIGIT] = {1,2,3};
+volatile uint8_t data_for_display[LENGTH_ARRAY] = {1,45};
 uint8_t mask_digits = 0x00; // Маска, биты соответстующие отображаемым разрядам равны "1"
 volatile uint8_t flash_digit = 0;
 volatile int8_t number_flash_digit = -1; // Номер мигающего разряда
@@ -18,7 +18,8 @@ void next_flash_digit(void)
 		number_flash_digit = 0;
 	}
 	else {
-		number_flash_digit = (++number_flash_digit)%NUMBER_DIGIT;
+		if (++number_flash_digit == LENGTH_ARRAY)
+			number_flash_digit = -1;		
 	}
 }
 
@@ -31,10 +32,10 @@ void init_display(void)
 	DIRECT_DISPLAY = 0xFF;
 	for (int i = 0; i < NUMBER_DIGIT; ++i){
 		//mask_digits |= (1 << i);
-		mask_digits = flash_digit | (1 << (i + PORT_DIGIT_0));
-		flash_digit = mask_digits;
+		mask_digits = mask_digits | (1 << (i + PORT_DIGIT_0));
 	}
-	DIRECT_DIGITS = flash_digit;
+	flash_digit = mask_digits;
+	DIRECT_DIGITS = mask_digits;
 }	
 
 void flash_digiting(void)
@@ -43,7 +44,15 @@ void flash_digiting(void)
 		init_display();
 	}
 	else {
-		flash_digit = (flash_digit == mask_digits)?mask_digits ^ (1 << (number_flash_digit + PORT_DIGIT_0)):mask_digits;
+		if (flash_digit == mask_digits) {
+			for (register uint8_t i = 0; i < DIGIT_FOR_NUMBER; ++i) {
+				flash_digit = flash_digit ^ \
+				 (1 << (number_flash_digit*DIGIT_FOR_NUMBER + i + PORT_DIGIT_0));
+			}
+		}
+		else {
+			flash_digit = mask_digits;
+		}
 	}
 }
 
@@ -51,7 +60,13 @@ void display_array(void)
 {
 	static uint8_t number_digit = 0; // Номер отображаемого разряда
 	uint8_t byte_data = 0x00;
-	byte_data = eeprom_read_byte(digits + *(data_for_display + (NUMBER_DIGIT-number_digit-1))); // Считываем из ПЗУ байт соответсвующий цифре
+	uint8_t displayed_number = *(data_for_display + (LENGTH_ARRAY-number_digit/DIGIT_FOR_NUMBER-1));
+	if (DIGIT_FOR_NUMBER > 1) {
+		byte_data = eeprom_read_byte(digits + (number_digit%2)?displayed_number/10:displayed_number%10); // Считываем из ПЗУ байт соответсвующий цифре
+	}
+	else {
+		byte_data = eeprom_read_byte(digits + displayed_number);
+	}
 	PORT_DISPLAY = byte_data;
 	PORT_DIGITS &= ~mask_digits;
 	PORT_DIGITS |= ((1 << (number_digit + PORT_DIGIT_0)) & flash_digit);	

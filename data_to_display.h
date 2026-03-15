@@ -1,7 +1,9 @@
 #ifndef DATA_TO_DISPLAY_H
 #define DATA_TO_DISPLAY_H
 
-#define NUMBER_DIGIT 3
+#define NUMBER_DIGIT 3 /* Число разрядов индикатора */
+#define LENGTH_ARRAY 2 /* Размер массива с отображаемыми числами */
+#define DIGIT_FOR_NUMBER 2 /* Количество цифр для отображения числа */
 
 #define PINBOARD
 /* Определение констант для отображение символов на семисегментном индикаторе */
@@ -11,7 +13,7 @@
 #define	IND_TWO		0b10110011	/* 0xB3 Отображение "2"*/
 #define	IND_THREE	0b10111010	/* 0xBA Отображение "3"*/
 #define	IND_FOUR	0b01111000	/* 0x78 Отображение "4"*/
-#define	IND_FIVE	0b11011010	/* 0xCA Отображение "5"*/
+#define	IND_FIVE	0b11011010	/* 0xDA Отображение "5"*/
 #define	IND_SIX		0b11011011	/* 0xCB Отображение "6"*/
 #define	IND_SEVEN	0b10101000	/* 0xA8 Отображение "7"*/
 #define	IND_EIGHT	0b11111011	/* 0xFB Отображение "8"*/

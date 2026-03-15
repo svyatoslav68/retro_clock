@@ -139,6 +139,9 @@
     <Compile Include="button.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="button.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="clock.c">
       <SubType>compile</SubType>
     </Compile>
@@ -148,13 +151,25 @@
     <Compile Include="ctrl_timer.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="ctrl_timer.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="data_to_display.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="data_to_display.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="main.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="main.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="RTOS.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="RTOS.h">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>
