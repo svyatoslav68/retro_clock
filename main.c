@@ -7,6 +7,7 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <stddef.h>
 
 #include "main.h"
 #include "data_to_display.h"
@@ -17,6 +18,9 @@
 //extern  int8_t number_flash_digit; // Номер мигающего разряда
 
 void init() {
+	/* Установка портов ввода/вывода */
+	DIRECT_LEDS_PINBOARD = 0x0F; /* Младшие разряды на ввод, старшие на вывод */
+	PORT_LEDS_PINBOARD = 0x0F; /* Подтягиваем вводные разряды порта */
 	/* Установка параметров внешних прерываний */
 	MCUCR = (0 << ISC11)|(1 << ISC10); // Срабатывание по каждому фронту
 	GIFR |= (1 << INTF1);

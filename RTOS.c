@@ -1,4 +1,4 @@
-#include <stdint.h>
+#include <stddef.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "main.h"

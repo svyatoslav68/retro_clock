@@ -55,6 +55,7 @@ void display_array(void);
 void init_display(void);
 void next_flash_digit(void);
 void flash_digiting(void);
+void stop_flashing();
 
 /* Ќазначаем порты, отвественные за вывод на дисплей */
 #define DIRECT_DISPLAY DDRA

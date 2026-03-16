@@ -1,6 +1,7 @@
 #ifndef CTRL_TIMER_H
 #define CTRL_TIMER_H
 
+//#include <stdint.h>
 #define TIMER_QUEUE_SIZE 10
 
 #define  DELAY_TIMER_MS 1UL /* Время задержки, генерируемой таймером в мс */         
@@ -34,5 +35,6 @@ void start_timer0();
 void stop_timer0();
 //void add_timer_task(type_queue_node task);
 void init_test_timer_queue(void);
+void add_new_task_with_delay(const TPTR task, const size_t delay, const size_t tiks);
 
 #endif // CTRL_TIMER_H

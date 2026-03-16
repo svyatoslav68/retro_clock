@@ -1,5 +1,6 @@
 #include <avr/io.h>
 #include <avr/eeprom.h>
+#include <stddef.h>
 #include "RTOS.h"
 #include "button.h"
 //#include "timer_queue.h"
@@ -14,13 +15,8 @@ uint8_t EEMEM digits[] = {IND_ZERO, IND_ONE, IND_TWO, IND_THREE, IND_FOUR, IND_F
 
 void next_flash_digit(void)
 {
-	if (number_flash_digit == -1){
-		number_flash_digit = 0;
-	}
-	else {
 		if (++number_flash_digit == LENGTH_ARRAY)
-			number_flash_digit = -1;		
-	}
+			number_flash_digit = 0;		
 }
 
 void stop_flashing(){

@@ -1,4 +1,4 @@
-#include <stdint.h>
+//#include <stdint.h>
 #include <stddef.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -26,6 +26,9 @@ queue_t timer_tasks;// = {timer_queue, 0};
 queue_node_t timer_task_NULL = {NULL, 0, 0};
 	
 void swap (queue_node_t *first, queue_node_t *second);
+TPTR get_top_task();
+queue_node_t pop_task();
+
 
 uint8_t parent(const uint8_t i) {
 	if (i > 0)
@@ -166,49 +169,6 @@ void execute_task()
 	root_node.func();
 	//printf("execute func!\nResult = %d\n", root_node.func(root_node.num_tiks));
 }
-
-ISR(TIMER0_COMP_vect)
-{
-	//PORT_LEDS |= (1 << PORT_BLANK_LED);
-	/*PORT_LEDS &= ~(1 << PORT_TEST);*/
-	queue_node_t *current_timer_task = timer_tasks.nodes;//(queue_node_t *)timer_tasks.nodes;
-	queue_node_t node_for_repeat = timer_task_NULL;
-	while (current_timer_task < (timer_queue + timer_tasks.size)){ // Проходим по всему списку задач таймера
-		if ((current_timer_task->func) && (!(current_timer_task->current_tik))) {// Если стало 0, то добавиить в очередь
-			if (current_timer_task->num_tiks) { // Если num_tick, значит это повторяемая задача
-				node_for_repeat = pop_task();   // Создать переменную, содержащую такую же задачу
-				node_for_repeat.current_tik = node_for_repeat.num_tiks; // Восстановить current_tik
-				add_task_with_repeat(node_for_repeat);  // Добавить созданную задачу в список задач таймера
-				continue;
-				//--current_timer_task;
-				//add_new_task(*current_timer_task);
-			}
-			else {
-				add_task(pop_func());  // Извлечь функцию и отправить её в список задач на выполнение
-				//PORT_LEDS &= ~(1 << PORT_TEST);
-			}
-		}
-		else {
-			--current_timer_task->current_tik; // Уменьшить current_tik
-		}
-		++current_timer_task;
-	}
-	//PORT_LEDS &= ~(1 << PORT_BLANK_LED);
-	//TCNT0 = VALUE_TCNT0;
-}
-
-ISR (INT1_vect)
-{
-	//PORT_LEDS |= (1 << PORT_TEST);
-	/* Отключим прерывание. Включим после срабатывания таймера. */
-	GICR &= ~(1 << INT1);
-	/* Прерывание от кнопки ставит в очередь процедуру чтения состояния кнопки, 
-	которая будет определеять состояние после задержки в 20мс */
-	queue_node_t read_button_after_delay = {read_button, DELAY_ANTIDREBEZG, 0};
-	add_new_task(read_button_after_delay);
-	//PORT_LEDS &= ~(1 << PORT_TEST);
-}
-
 void init_timer_queue()
 {
 	for(int i=0; i < TIMER_QUEUE_SIZE; ++i){
@@ -287,4 +247,46 @@ void init_test_timer_queue(void)
 	add_new_task(off_test);
 	*/
 	//add_new_task(on_test);	
+}
+
+ISR(TIMER0_COMP_vect)
+{
+	//PORT_LEDS |= (1 << PORT_BLANK_LED);
+	/*PORT_LEDS &= ~(1 << PORT_TEST);*/
+	queue_node_t *current_timer_task = timer_tasks.nodes;//(queue_node_t *)timer_tasks.nodes;
+	queue_node_t node_for_repeat = timer_task_NULL;
+	while (current_timer_task < (timer_queue + timer_tasks.size)){ // Проходим по всему списку задач таймера
+		if ((current_timer_task->func) && (!(current_timer_task->current_tik))) {// Если стало 0, то добавиить в очередь
+			if (current_timer_task->num_tiks) { // Если num_tick, значит это повторяемая задача
+				node_for_repeat = pop_task();   // Создать переменную, содержащую такую же задачу
+				node_for_repeat.current_tik = node_for_repeat.num_tiks; // Восстановить current_tik
+				add_task_with_repeat(node_for_repeat);  // Добавить созданную задачу в список задач таймера
+				continue;
+				//--current_timer_task;
+				//add_new_task(*current_timer_task);
+			}
+			else {
+				add_task(pop_func());  // Извлечь функцию и отправить её в список задач на выполнение
+				//PORT_LEDS &= ~(1 << PORT_TEST);
+			}
+		}
+		else {
+			--current_timer_task->current_tik; // Уменьшить current_tik
+		}
+		++current_timer_task;
+	}
+	//PORT_LEDS &= ~(1 << PORT_BLANK_LED);
+	//TCNT0 = VALUE_TCNT0;
+}
+
+ISR (INT1_vect)
+{
+	//PORT_LEDS |= (1 << PORT_TEST);
+	/* Отключим прерывание. Включим после срабатывания таймера. */
+	GICR &= ~(1 << INT1);
+	/* Прерывание от кнопки ставит в очередь процедуру чтения состояния кнопки, 
+	которая будет определеять состояние после задержки в 20мс */
+	queue_node_t read_button_after_delay = {read_button, DELAY_ANTIDREBEZG, 0};
+	add_new_task(read_button_after_delay);
+	//PORT_LEDS &= ~(1 << PORT_TEST);
 }
