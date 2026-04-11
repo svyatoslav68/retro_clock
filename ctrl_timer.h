@@ -4,8 +4,8 @@
 //#include <stdint.h>
 #define TIMER_QUEUE_SIZE 10
 
-#define  DELAY_TIMER_MS 1UL /* Время задержки, генерируемой таймером в мс */         
-#define  DIVIDER_0 256UL   /* Предделитель для таймера-счетчика 0 */
+#define  DELAY_TIMER_MS 10UL /* Время задержки, генерируемой таймером в сотых долях мс */
+#define  DIVIDER_0 64UL      /* Предделитель для таймера-счетчика 0 */
 #if DIVIDER_0 == 1024UL
 #define CLOCK_SELECT_BITS_TIMER0 0x05
 #elif DIVIDER_0 == 256UL
@@ -14,8 +14,8 @@
 #define CLOCK_SELECT_BITS_TIMER0 0x03
 #endif
 
-#define VALUE_OCR0 (F_CPU/(DIVIDER_0*DELAY_TIMER_MS*1000))
-#define VALUE_TCNT0 (256UL-F_CPU/(DIVIDER_0*DELAY_TIMER_MS*1000))
+#define VALUE_OCR0 ((F_CPU*DELAY_TIMER_MS)/(DIVIDER_0*100000))
+#define VALUE_TCNT0 (256UL-F_CPU/(DIVIDER_0*DELAY_TIMER_MS*10))
 
 /* Флаг разрешения прерывания, по которому работает очередь задач таймера */
 #define TIMER_INTERRUPT_FLAG OCIE0

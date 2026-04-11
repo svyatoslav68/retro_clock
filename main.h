@@ -3,9 +3,14 @@
 
 //#define F_CPU 7372800
 /* Именование портов ввода/вывода */
-#define PORT_ENCODER PORTD
+//#define PORT_ENCODER PORTD
 #define PORT_LEDS_PINBOARD PORTD
 #define PIN_BUTTONS PIND
+//#define DIRECT_ENCODER DDRD
+#define DIRECT_LEDS_PINBOARD DDRD
+#define DIRECT_BUTTONS DDRD
+
+
 
 #define PORT_LEDS_BOARD PORTA
 #define DIRECT_LEDS_BOARD DDRA
@@ -15,15 +20,11 @@
 #define PORT_LED_BOARD3 PORTA7
 
 
-#define DIRECT_ENCODER DDRD
-#define DIRECT_LEDS_PINBOARD DDRD
-#define DIRECT_BUTTONS DDRD
-
 #define PIN_ENCODER_INPUT_1 PORTD2
 #define PIN_ENCODER_INPUT_2 PORTD6
 
 #define PIN_BUTTON PORTD3
-#define PORT_TEST PORTD4
+//#define PORT_TEST PORTD4
 
 /* Определение портов, к которым подключены тестовые светодиоды */
 #ifdef PINBOARD

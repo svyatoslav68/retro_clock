@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include "encoder.h"
 #include "data_to_display.h"
 #include "main.h"
 #include "RTOS.h"
@@ -238,8 +239,9 @@ void init_test_timer_queue(void)
 {
 	//queue_node_t blank_led = {};
 #ifdef PINBOARD
-	add_new_task_with_delay(display_array, 10, 10);
-	add_new_task_with_delay(flash_digiting, 750, 750);
+	add_new_task_with_delay(display_array, 40, 40);
+	add_new_task_with_delay(flash_digiting, 3000, 3000);
+	add_new_task_with_delay(reading_encoder, 10, 10);
 #endif
 	/*
 	add_new_task_with_delay(blank_led_board, 250, 250);

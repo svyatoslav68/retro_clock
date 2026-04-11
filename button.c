@@ -10,6 +10,7 @@
 #include <stddef.h>
 #include "main.h"
 #include "RTOS.h"
+#include "ctrl_timer.h"
 #include "data_to_display.h"
 #include "button.h"
 #include "clock.h"
@@ -53,7 +54,7 @@ void clicked_button2()
 void long_pressed_button()
 /* Функция выполняется в результате длинного нажатия на кнопку */
 {
-	PORT_LEDS_PINBOARD ^= (1 << PORT_TEST);
+	//PORT_LEDS_PINBOARD ^= (1 << PORT_TEST);
     //stop_flashing();
 	switch(mode) {
 		case viewclock:
@@ -111,7 +112,7 @@ void read_button()
 	}
     else {
 		flags_button |= (1 << FLAG_BUTTON_PRESSED);
-		add_new_task_with_delay(definition_longtime, 1500U, 0);
+		add_new_task_with_delay(definition_longtime, TIME_LONG_PRESS_BUTTON, 0);
     }
 }
 

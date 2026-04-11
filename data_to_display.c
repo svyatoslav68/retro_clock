@@ -16,6 +16,7 @@ volatile uint8_t flash_digit = 0;
 volatile int8_t number_flash_digit = -1; // Номер мигающего разряда
 
 uint8_t EEMEM digits[] = {IND_ZERO, IND_ONE, IND_TWO, IND_THREE, IND_FOUR, IND_FIVE, IND_SIX, IND_SEVEN, IND_EIGHT, IND_NINE, IND_DOT, IND_MINUS};
+int8_t displayed_number = 0x00;
 
 void next_flash_digit(void)
 {
@@ -60,7 +61,7 @@ void display_array(void)
 {
 	static uint8_t number_digit = 0; // Номер отображаемого разряда
 	uint8_t byte_data = 0x00;
-	uint8_t displayed_number = 0x00;
+	displayed_number = 0x00;
 	switch (mode){
 	 case viewclock:
 	 case setclock:
@@ -70,6 +71,8 @@ void display_array(void)
 	 case setalarm:
 		displayed_number = *(alarm_array + (LENGTH_ARRAY-number_digit/DIGIT_FOR_NUMBER-1));
 		break;
+	 default:
+		;
 	}
 	if (DIGIT_FOR_NUMBER > 1) {
 		byte_data = eeprom_read_byte(digits + (number_digit%2)?displayed_number/10:displayed_number%10); // Считываем из ПЗУ байт соответсвующий цифре

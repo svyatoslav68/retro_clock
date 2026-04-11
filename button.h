@@ -11,6 +11,7 @@
 #define FLAG_BUTTON 1
 
 #define DELAY_ANTIDREBEZG 40
+#define TIME_LONG_PRESS_BUTTON (4UL*1500UL) /* Продолжительность нажатия на кнопку, считающееся длительным. 1500 mc */
 
 void read_button();
 void clicked_button2();

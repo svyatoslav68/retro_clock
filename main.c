@@ -14,6 +14,7 @@
 #include "RTOS.h"
 #include "ctrl_timer.h"
 #include "clock.h"
+#include "encoder.h"
 
 //extern  int8_t number_flash_digit; // Номер мигающего разряда
 volatile typemode  mode;
@@ -21,8 +22,8 @@ volatile uint8_t flags = 0x00;
 
 void init() {
 	/* Установка портов ввода/вывода */
-	DIRECT_LEDS_PINBOARD = 0x0F; /* Младшие разряды на ввод, старшие на вывод */
-	PORT_LEDS_PINBOARD = 0x0F; /* Подтягиваем вводные разряды порта */
+	//DIRECT_LEDS_PINBOARD = 0x0F; /* Младшие разряды на ввод, старшие на вывод */
+	//PORT_LEDS_PINBOARD = 0x0F; /* Подтягиваем вводные разряды порта */
 	/* Установка параметров внешних прерываний */
 	MCUCR = (0 << ISC11)|(1 << ISC10); // Срабатывание по каждому фронту
 	GIFR |= (1 << INTF1);
@@ -33,6 +34,7 @@ void init() {
 int main(void)
 {
 	init();
+	init_encoder();
 #ifdef PINBOARD
 	init_display();
 #endif
@@ -46,6 +48,7 @@ int main(void)
     /* Replace with your application code */
     while (1) 
     {
+		//reading_encoder();
 		if (flags & (1 << FLAG_EQUAL)){
 			if(mode == viewclock){
 				mode = alarm;
