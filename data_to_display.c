@@ -4,9 +4,13 @@
 #include "RTOS.h"
 #include "button.h"
 //#include "timer_queue.h"
+#include "clock.h"
 #include "data_to_display.h"
 
 volatile uint8_t data_for_display[LENGTH_ARRAY] = {1,45};
+extern uint8_t clock_array[LENGTH_ARRAY];
+extern uint8_t alarm_array[LENGTH_ARRAY];
+extern typemode  mode;
 uint8_t mask_digits = 0x00; // Маска, биты соответстующие отображаемым разрядам равны "1"
 volatile uint8_t flash_digit = 0;
 volatile int8_t number_flash_digit = -1; // Номер мигающего разряда
@@ -56,7 +60,17 @@ void display_array(void)
 {
 	static uint8_t number_digit = 0; // Номер отображаемого разряда
 	uint8_t byte_data = 0x00;
-	uint8_t displayed_number = *(data_for_display + (LENGTH_ARRAY-number_digit/DIGIT_FOR_NUMBER-1));
+	uint8_t displayed_number = 0x00;
+	switch (mode){
+	 case viewclock:
+	 case setclock:
+		displayed_number = *(clock_array + (LENGTH_ARRAY-number_digit/DIGIT_FOR_NUMBER-1));
+		break;
+	 case viewalarm:
+	 case setalarm:
+		displayed_number = *(alarm_array + (LENGTH_ARRAY-number_digit/DIGIT_FOR_NUMBER-1));
+		break;
+	}
 	if (DIGIT_FOR_NUMBER > 1) {
 		byte_data = eeprom_read_byte(digits + (number_digit%2)?displayed_number/10:displayed_number%10); // Считываем из ПЗУ байт соответсвующий цифре
 	}

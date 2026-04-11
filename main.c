@@ -16,6 +16,8 @@
 #include "clock.h"
 
 //extern  int8_t number_flash_digit; // Номер мигающего разряда
+volatile typemode  mode;
+volatile uint8_t flags = 0x00;
 
 void init() {
 	/* Установка портов ввода/вывода */
@@ -38,11 +40,22 @@ int main(void)
 	init_timer_queue();
 	//number_flash_digit = 0;
 	init_test_timer_queue();
+	mode = viewclock;
 	start_timer0();
 	start_timer1();
     /* Replace with your application code */
     while (1) 
     {
+		if (flags & (1 << FLAG_EQUAL)){
+			if(mode == viewclock){
+				mode = alarm;
+			}
+		}
+		if (flags & (1 << FLAG_NOTEQUAL)){
+			if((mode == notalarm) || (mode == alarm)){
+				mode = viewclock;
+			}
+		}
 		task_manager();
     }
 }

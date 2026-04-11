@@ -12,6 +12,7 @@
 #include "RTOS.h"
 #include "data_to_display.h"
 #include "button.h"
+#include "clock.h"
 //#include "timer_queue.h"
 //#include "tasks.h"
 
@@ -21,19 +22,61 @@
 #define FLAG_LONGTIME_BUTTON 1
 
 static uint8_t flags_button = 0x00;
-
+extern typemode  mode;
 
 void clicked_button2()
 /* Функция выполняется при click'е на кнопку */
 {
-	next_flash_digit();
+	switch (mode)
+	{
+		case viewclock:
+		 mode = viewalarm;
+		 break;
+		case viewalarm:
+		 mode = viewclock;
+		 break;
+		case setclock:
+			next_flash_digit();
+			break;
+		case setalarm:
+			next_flash_digit();
+			break;
+		case alarm:
+		 mode = notalarm;
+		 break;
+		default:
+		 break;
+	}
+	//next_flash_digit();
 }
 
 void long_pressed_button()
 /* Функция выполняется в результате длинного нажатия на кнопку */
 {
 	PORT_LEDS_PINBOARD ^= (1 << PORT_TEST);
-    stop_flashing();
+    //stop_flashing();
+	switch(mode) {
+		case viewclock:
+		case notalarm:
+			mode = setclock;
+			next_flash_digit();
+			break;
+		case viewalarm:
+			mode = setalarm;
+			next_flash_digit();
+			break;
+		case setclock:
+			mode = viewclock;
+			stop_flashing();
+			break;
+		case setalarm:
+			mode = viewalarm;
+			stop_flashing();
+			break;
+		case alarm:
+			mode = notalarm;
+			break;
+	}
 }
 
 void definition_longtime()
@@ -68,7 +111,7 @@ void read_button()
 	}
     else {
 		flags_button |= (1 << FLAG_BUTTON_PRESSED);
-		add_new_task_with_delay(definition_longtime, 1500, 0);
+		add_new_task_with_delay(definition_longtime, 1500U, 0);
     }
 }
 

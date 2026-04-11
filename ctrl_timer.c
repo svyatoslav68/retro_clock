@@ -11,8 +11,10 @@
 
 typedef struct {
 	TPTR func;
-	size_t current_tik;
-	size_t num_tiks;// количество счетов для задержки выполнения функции
+	size_t current_tik; /* текущий счет */
+	size_t num_tiks;
+	/* количество счетов для задержки выполнения функции.
+	 * если num_tiks == 0, то func выполняется единожды */
 } queue_node_t;
 
 typedef struct {
@@ -112,7 +114,7 @@ void add_new_task(const queue_node_t new_task)
 	TIMSK = tmp_TIMSK;
 }
 
-void add_new_task_with_delay(const TPTR task, const size_t delay, const size_t tiks)
+void add_new_task_with_delay(const TPTR task, const uint16_t delay, const uint16_t tiks)
 {
 	const queue_node_t timer_task = {task, delay, tiks};
 	add_new_task(timer_task);
