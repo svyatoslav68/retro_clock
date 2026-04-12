@@ -12,6 +12,7 @@
 
 #define FLAG_EQUAL 0
 #define FLAG_NOTEQUAL 1
+#define FLAG_READ_ENCODER 2
 
 typedef enum {viewclock,  // отображение часов
 			  viewalarm,  // отображение будильника

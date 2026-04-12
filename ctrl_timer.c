@@ -241,7 +241,7 @@ void init_test_timer_queue(void)
 #ifdef PINBOARD
 	add_new_task_with_delay(display_array, 40, 40);
 	add_new_task_with_delay(flash_digiting, 3000, 3000);
-	add_new_task_with_delay(reading_encoder, 10, 10);
+	//add_new_task_with_delay(reading_encoder, 10, 10);
 #endif
 	/*
 	add_new_task_with_delay(blank_led_board, 250, 250);
@@ -257,6 +257,9 @@ ISR(TIMER0_COMP_vect)
 {
 	//PORT_LEDS |= (1 << PORT_BLANK_LED);
 	/*PORT_LEDS &= ~(1 << PORT_TEST);*/
+	PORT_TEST |= (1 << ONE_PIN_TEST1);
+	//flags |= (1 << FLAG_READ_ENCODER);
+	//add_task(reading_encoder);
 	queue_node_t *current_timer_task = timer_tasks.nodes;//(queue_node_t *)timer_tasks.nodes;
 	queue_node_t node_for_repeat = timer_task_NULL;
 	while (current_timer_task < (timer_queue + timer_tasks.size)){ // Проходим по всему списку задач таймера
@@ -276,9 +279,11 @@ ISR(TIMER0_COMP_vect)
 		}
 		else {
 			--current_timer_task->current_tik; // Уменьшить current_tik
+			add_task(reading_encoder);
 		}
 		++current_timer_task;
 	}
+	PORT_TEST &= ~(1 << ONE_PIN_TEST1);
 	//PORT_LEDS &= ~(1 << PORT_BLANK_LED);
 	//TCNT0 = VALUE_TCNT0;
 }
