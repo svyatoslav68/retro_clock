@@ -14,7 +14,7 @@ extern int8_t displayed_number;
 
 void init_encoder(){
 	DDR_ENCODER &= ~(1 << ENCODER_CHANNEL_A) | (1 << ENCODER_CHANNEL_B);
-	DDR_TEST |= (1 << ONE_PIN_TEST1)|(1 << ONE_PIN_TEST2);
+	DDR_TEST |= (1 << ONE_PIN_TEST1)|(1 << ONE_PIN_TEST2)|(1 << ONE_PIN_TEST3);
 	PORT_ENCODER |= (1 << ENCODER_CHANNEL_A) | (1 << ENCODER_CHANNEL_B);
 }
 
@@ -26,9 +26,9 @@ void reading_encoder(){
 	static uint8_t equal_repeats = 0;     /* Количество повторов принятой комбинации двух бит */
 	static uint8_t encoder_byte = 0x00;   /* Байт, состоящих из четырех пар принятых бит */
 	register uint8_t current_pair_bits = 0;
+	PORT_TEST |= (1 << ONE_PIN_TEST2);
 	if ((mode == setalarm) || (mode == setclock)){
 		stop_timer0();
-		PORT_TEST |= (1 << ONE_PIN_TEST2);
 		current_pair_bits = 
 		  ((PIN_ENCODER & (1 << ENCODER_CHANNEL_A)) >> ENCODER_CHANNEL_A) | (((PIN_ENCODER & (1 << ENCODER_CHANNEL_B)) >> ENCODER_CHANNEL_B) << 1);
 		if (current_pair_bits == prev_pair_bits) {
@@ -67,8 +67,8 @@ void reading_encoder(){
 				flags_encoder &= 0b11111000;
 			}
 		}
-		PORT_TEST &= ~(1 << ONE_PIN_TEST2);
 		start_timer0();
 	}  // if (mode)
+	PORT_TEST &= ~(1 << ONE_PIN_TEST2);
 }
 

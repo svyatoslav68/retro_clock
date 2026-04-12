@@ -7,7 +7,6 @@
 #include "main.h"
 #include "RTOS.h"
 #include "button.h"
-//#include "tasks.h"
 #include "ctrl_timer.h"
 
 typedef struct {
@@ -241,25 +240,13 @@ void init_test_timer_queue(void)
 #ifdef PINBOARD
 	add_new_task_with_delay(display_array, 40, 40);
 	add_new_task_with_delay(flash_digiting, 3000, 3000);
-	//add_new_task_with_delay(reading_encoder, 10, 10);
+	add_new_task_with_delay(reading_encoder, 2, 2);
 #endif
-	/*
-	add_new_task_with_delay(blank_led_board, 250, 250);
-	queue_node_t on_test = {on_test_led, 50, 0};
-	queue_node_t off_test = {off_test_led, 170, 0};
-	add_new_task(on_test);
-	add_new_task(off_test);
-	*/
-	//add_new_task(on_test);	
 }
 
 ISR(TIMER0_COMP_vect)
 {
-	//PORT_LEDS |= (1 << PORT_BLANK_LED);
-	/*PORT_LEDS &= ~(1 << PORT_TEST);*/
 	PORT_TEST |= (1 << ONE_PIN_TEST1);
-	//flags |= (1 << FLAG_READ_ENCODER);
-	//add_task(reading_encoder);
 	queue_node_t *current_timer_task = timer_tasks.nodes;//(queue_node_t *)timer_tasks.nodes;
 	queue_node_t node_for_repeat = timer_task_NULL;
 	while (current_timer_task < (timer_queue + timer_tasks.size)){ // Проходим по всему списку задач таймера
@@ -269,33 +256,26 @@ ISR(TIMER0_COMP_vect)
 				node_for_repeat.current_tik = node_for_repeat.num_tiks; // Восстановить current_tik
 				add_task_with_repeat(node_for_repeat);  // Добавить созданную задачу в список задач таймера
 				continue;
-				//--current_timer_task;
-				//add_new_task(*current_timer_task);
 			}
-			else {
+			//else {
 				add_task(pop_func());  // Извлечь функцию и отправить её в список задач на выполнение
-				//PORT_LEDS &= ~(1 << PORT_TEST);
-			}
+			//}
 		}
 		else {
 			--current_timer_task->current_tik; // Уменьшить current_tik
-			add_task(reading_encoder);
 		}
 		++current_timer_task;
 	}
 	PORT_TEST &= ~(1 << ONE_PIN_TEST1);
-	//PORT_LEDS &= ~(1 << PORT_BLANK_LED);
-	//TCNT0 = VALUE_TCNT0;
+	
 }
 
 ISR (INT1_vect)
 {
-	//PORT_LEDS |= (1 << PORT_TEST);
 	/* Отключим прерывание. Включим после срабатывания таймера. */
 	GICR &= ~(1 << INT1);
 	/* Прерывание от кнопки ставит в очередь процедуру чтения состояния кнопки, 
 	которая будет определеять состояние после задержки в 20мс */
 	queue_node_t read_button_after_delay = {read_button, DELAY_ANTIDREBEZG, 0};
 	add_new_task(read_button_after_delay);
-	//PORT_LEDS &= ~(1 << PORT_TEST);
 }
