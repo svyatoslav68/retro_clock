@@ -3,6 +3,8 @@
 #include <avr/interrupt.h>
 #include "main.h"
 #include "RTOS.h"
+#include "ctrl_timer.h"
+#include "encoder.h"
 //#include "timer_queue.h"
 
 
@@ -21,8 +23,10 @@ void init_task_queue(void){
 
 void task_manager(void) /* ядро диспетчера. Он будет крутиться в главном цикле и вызывать задачи на выполнение */
 {
+	PORT_TEST |= (1 << ONE_PIN_TEST4);
 	/* Объявляем переменную указатель на функцию, в которую будем помещать задачи из очереди */
 	TPTR task_for_execute = idle;
+	//stop_timer0();
 	CLI_M16;
 	task_for_execute = task_queue[0]; /* Берем первую задачу из очереди  и выполняем её */
 	task_for_execute();
@@ -40,7 +44,9 @@ void task_manager(void) /* ядро диспетчера. Он будет крутиться в главном цикле и
 	} 
 	/* Восстанавливаем бит прерываний */
 	end_function:
+	//start_timer0();
 	SEI_M16;
+	PORT_TEST &= ~(1 << ONE_PIN_TEST4);
 }
 
 void add_task(TPTR TS)
@@ -51,7 +57,7 @@ void add_task(TPTR TS)
 		CLI_M16;
 		flag_interrupt = 1;
 	}
-	while (task_for_execute < (TPTR *)task_queue + TASK_QUEUE_SIZE) {
+	while ((task_for_execute < (TPTR *)task_queue + TASK_QUEUE_SIZE) && (*task_for_execute != TS)) {
 		if ((*task_for_execute) == idle) {
 			*task_for_execute = TS;
 			break;

@@ -16,14 +16,20 @@
 
 typedef enum {viewclock,  // отображение часов
 			  viewalarm,  // отображение будильника
-			  setclock,   // установка часов
-			  setalarm,   // установка будильника
+			  setclockminutes,   // установка минут часов
+			  setclockhours,  // установка часов часов
+			  setalarmminutes,   // установка минут будильника
+			  setalarmhours,   // установка часов будильника
 			  alarm,		// звучание будильника
 			  notalarm	// остановка будильника
 			  } typemode;
 
 void start_timer1();
 void stop_timer1();
+void change_minute(int8_t);
+void change_hour(int8_t);
+void change_alarm_minute(int8_t direct);
+void change_alarm_hour(int8_t direct);
 
 
 #endif /* CLOCK_H_ */

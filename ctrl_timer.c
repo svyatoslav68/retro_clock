@@ -8,6 +8,7 @@
 #include "RTOS.h"
 #include "button.h"
 #include "ctrl_timer.h"
+#include "init2_test.h"
 
 typedef struct {
 	TPTR func;
@@ -239,14 +240,23 @@ void init_test_timer_queue(void)
 	//queue_node_t blank_led = {};
 #ifdef PINBOARD
 	add_new_task_with_delay(display_array, 40, 40);
-	add_new_task_with_delay(flash_digiting, 3000, 3000);
-	add_new_task_with_delay(reading_encoder, 2, 2);
+	add_new_task_with_delay(flash_digiting, 2000, 2000);
+	add_new_task_with_delay(reading_encoder, 1, 1);
 #endif
 }
 
-ISR(TIMER0_COMP_vect)
-{
+#ifdef DEBUG_INT0
+ISR(TIMER2_OVF_vect) {
+	/* Далее строки для отладки  */
+	stop_timer2();
+	disable_int0();
+	if (PIND & (1 << PIND2)) {
+		PORT_FOR_CONTROL_LED ^= (1 << CONTROL_LED);
+#else
+ISR(TIMER0_COMP_vect) {
+#endif
 	PORT_TEST |= (1 << ONE_PIN_TEST1);
+	/* Далее боевая функция */
 	queue_node_t *current_timer_task = timer_tasks.nodes;//(queue_node_t *)timer_tasks.nodes;
 	queue_node_t node_for_repeat = timer_task_NULL;
 	while (current_timer_task < (timer_queue + timer_tasks.size)){ // Проходим по всему списку задач таймера
@@ -255,11 +265,11 @@ ISR(TIMER0_COMP_vect)
 				node_for_repeat = pop_task();   // Создать переменную, содержащую такую же задачу
 				node_for_repeat.current_tik = node_for_repeat.num_tiks; // Восстановить current_tik
 				add_task_with_repeat(node_for_repeat);  // Добавить созданную задачу в список задач таймера
-				continue;
+				//continue;
 			}
-			//else {
+			else {
 				add_task(pop_func());  // Извлечь функцию и отправить её в список задач на выполнение
-			//}
+			}
 		}
 		else {
 			--current_timer_task->current_tik; // Уменьшить current_tik
@@ -267,7 +277,11 @@ ISR(TIMER0_COMP_vect)
 		++current_timer_task;
 	}
 	PORT_TEST &= ~(1 << ONE_PIN_TEST1);
-	
+#ifdef DEBUG_INT0
+	/* Далее строки для отладки  */
+	}
+	enable_int0();
+#endif
 }
 
 ISR (INT1_vect)

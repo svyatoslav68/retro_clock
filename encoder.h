@@ -13,8 +13,9 @@
 #define ONE_PIN_TEST1 PORTD4
 #define ONE_PIN_TEST2 PORTD5
 #define ONE_PIN_TEST3 PORTD6
+#define ONE_PIN_TEST4 PORTD7
 
-#define NUMBER_RIGHT_VALUE 2
+#define NUMBER_RIGHT_VALUE 4
 #define NUMBER_FOR_END_ROTATION 20
 
 void init_encoder();

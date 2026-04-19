@@ -1,6 +1,8 @@
 #ifndef MAIN_H
 #define MAIN_H
 
+/* Определение режима отладки */
+//#define DEBUG_INT0
 //#define F_CPU 7372800
 /* Именование портов ввода/вывода */
 //#define PORT_ENCODER PORTD

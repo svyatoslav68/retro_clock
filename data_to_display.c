@@ -9,8 +9,8 @@
 #include "data_to_display.h"
 
 volatile uint8_t data_for_display[LENGTH_ARRAY] = {1,45};
-extern uint8_t clock_array[LENGTH_ARRAY];
-extern uint8_t alarm_array[LENGTH_ARRAY];
+extern int8_t clock_array[LENGTH_ARRAY];
+extern int8_t alarm_array[LENGTH_ARRAY];
 extern typemode  mode;
 uint8_t mask_digits = 0x00; // Маска, биты соответстующие отображаемым разрядам равны "1"
 volatile uint8_t flash_digit = 0;
@@ -66,11 +66,13 @@ void display_array(void)
 	PORT_TEST |= (1 << ONE_PIN_TEST3);
 	switch (mode){
 	 case viewclock:
-	 case setclock:
+	 case setclockminutes:
+	 case setclockhours:
 		displayed_number = *(clock_array + (LENGTH_ARRAY-number_digit/DIGIT_FOR_NUMBER-1));
 		break;
 	 case viewalarm:
-	 case setalarm:
+	 case setalarmminutes:
+	 case setalarmhours:
 		displayed_number = *(alarm_array + (LENGTH_ARRAY-number_digit/DIGIT_FOR_NUMBER-1));
 		break;
 	 default:

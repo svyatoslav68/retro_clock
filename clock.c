@@ -10,12 +10,15 @@
 #include "data_to_display.h"
 #include "clock.h"
 
-volatile uint8_t clock_array[LENGTH_ARRAY] = {7, 30};
+volatile int8_t clock_array[LENGTH_ARRAY] = {7, 30};
 //volatile uint8_t byte_minutes = 0x00;
-volatile uint8_t alarm_array[LENGTH_ARRAY] = {12, 22};
+volatile int8_t alarm_array[LENGTH_ARRAY] = {12, 22};
 //volatile uint8_t byte_minutes_alarm = 0x00;
+extern typemode  mode;
 
 extern uint8_t flags;
+
+void add_minute();
 
 void start_timer1(){
 	TCNT1 = 0x00; // —брос счетчика
@@ -31,18 +34,64 @@ void stop_timer1(){
 }
 
 ISR(TIMER1_COMPA_vect) {
+	if ((mode != setclockminutes)&&(mode != setclockhours)) {
+		add_minute();
+		if ((clock_array[0] == alarm_array[0]) && (alarm_array[1] == clock_array[1])){
+			flags |= (1 << FLAG_EQUAL);
+			flags &= ~(1 <<FLAG_NOTEQUAL);
+		}
+		else {
+			flags &= ~(1 << FLAG_EQUAL);
+			flags |= (1 <<FLAG_NOTEQUAL);
+		}
+	}
+}
+
+void add_minute(){
 	if (++*(clock_array + 1) == 60) {
 		*(clock_array + 1) = 0x00;
 		if (++(*clock_array) == 24)	{
 			*clock_array = 0x00;
 		}
 	}
-	if ((clock_array[0] == alarm_array[0]) && (alarm_array[1] == clock_array[1])){
-		flags |= (1 << FLAG_EQUAL);
-		flags &= ~(1 <<FLAG_NOTEQUAL);
+}
+
+void change_minute(int8_t direct){
+	*(clock_array + 1) += direct;	
+		if (*(clock_array + 1) == 60) {
+			*(clock_array + 1) = 0;
+		}
+		if (*(clock_array +1 ) == -1) {
+			*(clock_array + 1) =59;
+		}
+}
+
+void change_hour(int8_t direct){
+	*clock_array += direct;
+		if (*clock_array == 24) {
+			*clock_array = 0;
+		}
+		if (*clock_array == -1) {
+			*clock_array = 23;
+		}
+}
+
+void change_alarm_minute(int8_t direct){
+	*(alarm_array + 1) += direct;
+	if (*(alarm_array + 1) == 60) {
+		*(alarm_array + 1) = 0;
 	}
-	else {
-		flags &= ~(1 << FLAG_EQUAL);
-		flags |= (1 <<FLAG_NOTEQUAL);
+	if (*(alarm_array +1 ) == -1) {
+		*(alarm_array + 1) =59;
+	}
+}
+
+void change_alarm_hour(int8_t direct){
+	*(alarm_array) += direct;
+	if (*(alarm_array) == 24) {
+		*(alarm_array) = 0;
+	}
+	if (*(alarm_array) == -1) {
+		*(alarm_array) =23;
 	}
 }

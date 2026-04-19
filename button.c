@@ -36,10 +36,20 @@ void clicked_button2()
 		case viewalarm:
 		 mode = viewclock;
 		 break;
-		case setclock:
+		case setclockminutes:
+			mode = setclockhours;
 			next_flash_digit();
 			break;
-		case setalarm:
+		case setclockhours:
+			mode = setclockminutes;
+			next_flash_digit();
+			break;
+		case setalarmminutes:
+			mode = setalarmhours;
+			next_flash_digit();
+			break;
+		case setalarmhours:
+			mode = setalarmminutes;
 			next_flash_digit();
 			break;
 		case alarm:
@@ -59,18 +69,22 @@ void long_pressed_button()
 	switch(mode) {
 		case viewclock:
 		case notalarm:
-			mode = setclock;
+			mode = setclockminutes;
+			//stop_timer1();
 			next_flash_digit();
 			break;
 		case viewalarm:
-			mode = setalarm;
+			mode = setalarmminutes;
+			//start_timer1();
 			next_flash_digit();
 			break;
-		case setclock:
+		case setclockminutes:
+		case setclockhours:
 			mode = viewclock;
 			stop_flashing();
 			break;
-		case setalarm:
+		case setalarmminutes:
+		case setalarmhours:
 			mode = viewalarm;
 			stop_flashing();
 			break;
