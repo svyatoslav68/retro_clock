@@ -36,7 +36,7 @@ void init() {
 int main(void)
 {
 	
-#ifdef PINBOARD
+#if defined(PINBOARD) || defined(M16BOARD)
 	init_display();
 #endif
 	init_task_queue();

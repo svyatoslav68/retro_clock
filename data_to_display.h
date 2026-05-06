@@ -1,11 +1,11 @@
 #ifndef DATA_TO_DISPLAY_H
 #define DATA_TO_DISPLAY_H
 
-#define NUMBER_DIGIT 3 /* Число разрядов индикатора */
+#define NUMBER_DIGIT 4 /* Число разрядов индикатора */
 #define LENGTH_ARRAY 2 /* Размер массива с отображаемыми числами */
 #define DIGIT_FOR_NUMBER 2 /* Количество цифр для отображения числа */
 
-#define PINBOARD
+#define M16BOARD
 /* Определение констант для отображение символов на семисегментном индикаторе */
 #ifdef PINBOARD
 #define	IND_ZERO	0b11101011	/* 0xEB Отображение "0"*/
@@ -27,7 +27,29 @@
 #define IND_H       0b01111001  /* 0x76 Отображение "H" */
 #define IND_T       0b01010011  /* 0x78 Отображение "t" */
 #define IND_CLEAR	0b00000000
-#else
+#endif
+#ifdef M16BOARD
+#define	IND_ZERO	0b00010100	/* 0xEB Отображение "0"*/
+#define	IND_ONE		0b11010111	/* 0x28 Отображение "1"*/
+#define	IND_TWO		0b01001100	/* 0xB3 Отображение "2"*/
+#define	IND_THREE	0b01000101	/* 0xBA Отображение "3"*/
+#define	IND_FOUR	0b10000111	/* 0x78 Отображение "4"*/
+#define	IND_FIVE	0b00100101	/* 0xDA Отображение "5"*/
+#define	IND_SIX		0b00100100	/* 0xCB Отображение "6"*/
+#define	IND_SEVEN	0b01010111	/* 0xA8 Отображение "7"*/
+#define	IND_EIGHT	0b00000100	/* 0xFB Отображение "8"*/
+#define	IND_NINE	0b00000101	/* 0xFA Отображение "9"*/
+#define	IND_DOT		0b11111011	/* 0x80 Отображение "."*/
+#define	IND_MINUS	0b11101111	/* 0x40 Отображение "-"*/
+#define IND_CEL		0b00001111  /* 0x63 Отображение знака градус */
+#define IND_E		0b00101100
+#define IND_R		0b11101110
+#define IND_S		0b00100101  /* 0x6B Отображение "S" */
+#define IND_H       0b10000110  /* 0x76 Отображение "H" */
+#define IND_T       0b10101100  /* 0x78 Отображение "t" */
+#define IND_CLEAR	0b11111111
+#endif
+#ifdef BOARD
 #define	IND_ZERO	0b00111111	/* 0x3F Отображение "0"*/
 #define	IND_ONE		0b00000110	/* 0x06 Отображение "1"*/
 #define	IND_TWO		0b01011011	/* 0x5B Отображение "2"*/
@@ -63,9 +85,10 @@ void stop_flashing();
 #define DIRECT_DIGITS DDRB
 #define PORT_DIGITS PORTB
 
-#define PORT_DIGIT_0 5
-#define PORT_DIGIT_1 6
-#define PORT_DIGIT_2 7
+#define PORT_DIGIT_0 4
+#define PORT_DIGIT_1 5
+#define PORT_DIGIT_2 6
+#define PORT_DIGIT_3 7
 
 
 #endif // DATA_TO_DISPLAY_H

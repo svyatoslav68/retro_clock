@@ -238,7 +238,7 @@ void init_test_timer_queue(void)
 /* Инициализация таймера для самотестирования */
 {
 	//queue_node_t blank_led = {};
-#ifdef PINBOARD
+#if defined(PINBOARD) || defined(M16BOARD)
 	add_new_task_with_delay(display_array, 40, 40);
 	add_new_task_with_delay(flash_digiting, 2000, 2000);
 	add_new_task_with_delay(reading_encoder, 1, 1);
