@@ -10,9 +10,15 @@
 
 #define FLAG_BUTTON 1
 
-#define DELAY_ANTIDREBEZG 40
-#define TIME_LONG_PRESS_BUTTON (4UL*1500UL) /* Продолжительность нажатия на кнопку, считающееся длительным. 1500 mc */
+#define DELAY_ANTIDREBEZG 100
+#define TIME_LONG_PRESS_BUTTON (10UL*1500UL) /* Продолжительность нажатия на кнопку, считающееся длительным. 1500 mc */
 
+#define DIRECT_BUTTONS DDRD
+#define PORT_BUTTONS PORTD
+#define PIN_BUTTONS PIND
+#define PIN_BUTTON PORTD3
+
+void init_port_button();
 void read_button();
 void clicked_button2();
 

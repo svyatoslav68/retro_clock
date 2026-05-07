@@ -44,6 +44,7 @@ int main(void)
 	//number_flash_digit = 0;
 	init_test_timer_queue();
 	init();
+	init_port_button();
 	mode = viewclock;
 	init_encoder();
 #ifdef DEBUG_INT0

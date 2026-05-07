@@ -4,7 +4,7 @@
 //#include <stdint.h>
 #define TIMER_QUEUE_SIZE 10
 
-#define  DELAY_TIMER_MS 25UL /* Время задержки, генерируемой таймером в сотых долях мс */
+#define  DELAY_TIMER_MS 10UL /* Время задержки, генерируемой таймером в сотых долях мс */
 #define  DIVIDER_0 64UL      /* Предделитель для таймера-счетчика 0 */
 #if DIVIDER_0 == 1024UL
 #define CLOCK_SELECT_BITS_TIMER0 0x05

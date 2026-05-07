@@ -25,6 +25,11 @@
 static uint8_t flags_button = 0x00;
 extern typemode  mode;
 
+void init_port_button(){
+	DIRECT_BUTTONS &= ~(1 << PIN_BUTTON);
+	PORT_BUTTONS |= (1 << PIN_BUTTON);
+}
+
 void clicked_button2()
 /* Функция выполняется при click'е на кнопку */
 {
