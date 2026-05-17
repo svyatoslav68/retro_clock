@@ -1,7 +1,6 @@
 #ifndef DATA_TO_DISPLAY_H
 #define DATA_TO_DISPLAY_H
 
-#define NUMBER_DIGIT 4 /* Число разрядов индикатора */
 #define LENGTH_ARRAY 2 /* Размер массива с отображаемыми числами */
 #define DIGIT_FOR_NUMBER 2 /* Количество цифр для отображения числа */
 
@@ -78,6 +77,7 @@ void init_display(void);
 void next_flash_digit(void);
 void flash_digiting(void);
 void stop_flashing();
+void flash_dot();
 
 /* Назначаем порты, отвественные за вывод на дисплей */
 #define DIRECT_DISPLAY DDRA
@@ -85,6 +85,8 @@ void stop_flashing();
 #define DIRECT_DIGITS DDRB
 #define PORT_DIGITS PORTB
 
+#define NUMBER_DIGIT 3 /* Число разрядов индикатора */
+/* Порты контроллера, используемые для включения разрядов индикатора */
 #define PORT_DIGIT_0 4
 #define PORT_DIGIT_1 5
 #define PORT_DIGIT_2 6

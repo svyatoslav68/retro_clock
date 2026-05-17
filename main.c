@@ -56,6 +56,7 @@ int main(void)
 #if defined(PINBOARD) || defined(M16BOARD)
 	add_new_task_with_delay(display_array, 60, 60);
 	add_new_task_with_delay(flash_digiting, 3000, 3000);
+	add_new_task_with_delay(flash_dot, 1000, 1000);
 	add_new_task_with_delay(reading_encoder, 2, 2);
 #endif
 	/* Replace with your application code */

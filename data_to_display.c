@@ -85,7 +85,7 @@ void display_array(void)
 	else {
 		byte_data = eeprom_read_byte(digits + displayed_number);
 	}
-	PORT_DISPLAY = displayed_dot?(byte_data | IND_DOT):byte_data;
+	PORT_DISPLAY = (displayed_dot & (mode == viewclock))?(byte_data | IND_DOT):byte_data;
 	PORT_DIGITS &= ~mask_digits;
 	PORT_DIGITS |= ((1 << (number_digit + PORT_DIGIT_0)) & flash_digit);	
 	if (++number_digit == NUMBER_DIGIT)
@@ -94,7 +94,7 @@ void display_array(void)
 	PORT_TEST &= ~(1 << ONE_PIN_TEST3);
 }
 
-void flash_dot {
-	
-	};
+void flash_dot (){
+	displayed_dot = (displayed_dot == 0)?1:0;
+};
 
