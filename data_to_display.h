@@ -1,7 +1,7 @@
 #ifndef DATA_TO_DISPLAY_H
 #define DATA_TO_DISPLAY_H
 
-#define NUMBER_DIGIT 3 /* Число разрядов индикатора */
+#define NUMBER_DIGIT 4 /* Число разрядов индикатора */
 #define LENGTH_ARRAY 2 /* Размер массива с отображаемыми числами */
 #define DIGIT_FOR_NUMBER 2 /* Количество цифр для отображения числа */
 
@@ -85,10 +85,10 @@ void stop_flashing();
 #define DIRECT_DIGITS DDRB
 #define PORT_DIGITS PORTB
 
-/*#define PORT_DIGIT_0 4*/
-#define PORT_DIGIT_0 5
-#define PORT_DIGIT_1 6
-#define PORT_DIGIT_2 7
+#define PORT_DIGIT_0 4
+#define PORT_DIGIT_1 5
+#define PORT_DIGIT_2 6
+#define PORT_DIGIT_3 7
 
 
 #endif // DATA_TO_DISPLAY_H

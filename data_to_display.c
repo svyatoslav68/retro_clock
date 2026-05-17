@@ -15,6 +15,7 @@ extern typemode  mode;
 uint8_t mask_digits = 0x00; // ћаска, биты соответстующие отображаемым разр€дам равны "1"
 volatile uint8_t flash_digit = 0;
 volatile int8_t number_flash_digit = -1; // Ќомер мигающего разр€да
+volatile uint8_t displayed_dot = 0;
 
 uint8_t EEMEM digits[] = {IND_ZERO, IND_ONE, IND_TWO, IND_THREE, IND_FOUR, IND_FIVE, IND_SIX, IND_SEVEN, IND_EIGHT, IND_NINE, IND_DOT, IND_MINUS};
 int8_t displayed_number = 0x00;
@@ -84,7 +85,7 @@ void display_array(void)
 	else {
 		byte_data = eeprom_read_byte(digits + displayed_number);
 	}
-	PORT_DISPLAY = byte_data;
+	PORT_DISPLAY = displayed_dot?(byte_data | IND_DOT):byte_data;
 	PORT_DIGITS &= ~mask_digits;
 	PORT_DIGITS |= ((1 << (number_digit + PORT_DIGIT_0)) & flash_digit);	
 	if (++number_digit == NUMBER_DIGIT)
@@ -92,4 +93,8 @@ void display_array(void)
 	//add_new_task_with_delay(&timer_tasks, display_array, 50);
 	PORT_TEST &= ~(1 << ONE_PIN_TEST3);
 }
+
+void flash_dot {
+	
+	};
 

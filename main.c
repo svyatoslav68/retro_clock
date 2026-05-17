@@ -42,7 +42,7 @@ int main(void)
 	init_task_queue();
 	init_timer_queue();
 	//number_flash_digit = 0;
-	init_test_timer_queue();
+	//init_test_timer_queue();
 	init();
 	init_port_button();
 	mode = viewclock;
@@ -53,6 +53,11 @@ int main(void)
 	start_timer0();
 	start_timer1();
 #endif    
+#if defined(PINBOARD) || defined(M16BOARD)
+	add_new_task_with_delay(display_array, 60, 60);
+	add_new_task_with_delay(flash_digiting, 3000, 3000);
+	add_new_task_with_delay(reading_encoder, 2, 2);
+#endif
 	/* Replace with your application code */
     while (1) 
     {
