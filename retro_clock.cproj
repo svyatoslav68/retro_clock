@@ -166,6 +166,9 @@
     <Compile Include="data_to_display.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="eeprom_values.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="encoder.c">
       <SubType>compile</SubType>
     </Compile>

@@ -12,7 +12,9 @@
 
 #define PORT_BEEPER PORTC
 #define DDR_BEEPER DDRC
+#define PIN_BEEPER PORTC0
 
+void init_beeper();
 void beeper_on();
 void beeper_off();
 

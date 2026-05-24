@@ -17,7 +17,7 @@ volatile uint8_t flash_digit = 0;
 volatile int8_t number_flash_digit = -1; // Номер мигающего разряда
 volatile uint8_t displayed_dot = 0;
 
-uint8_t EEMEM digits[] = {IND_ZERO, IND_ONE, IND_TWO, IND_THREE, IND_FOUR, IND_FIVE, IND_SIX, IND_SEVEN, IND_EIGHT, IND_NINE, IND_DOT, IND_MINUS};
+extern uint8_t digits[];
 int8_t displayed_number = 0x00;
 
 void next_flash_digit(void)
@@ -69,6 +69,8 @@ void display_array(void)
 	 case viewclock:
 	 case setclockminutes:
 	 case setclockhours:
+	 case alarm:
+	 case notalarm:
 		displayed_number = *(clock_array + (LENGTH_ARRAY-number_digit/DIGIT_FOR_NUMBER-1));
 		break;
 	 case viewalarm:
@@ -85,7 +87,12 @@ void display_array(void)
 	else {
 		byte_data = eeprom_read_byte(digits + displayed_number);
 	}
-	PORT_DISPLAY = (displayed_dot & (mode == viewclock))?(byte_data | IND_DOT):byte_data;
+#ifdef COMMON_CATOD
+	PORT_DISPLAY = (!displayed_dot | (mode != viewclock))?(byte_data | IND_DOT):byte_data;
+#endif /* COMMON_CATOD */
+#ifdef COMMON_ANOD
+	PORT_DISPLAY = (!displayed_dot | (mode != viewclock))?(byte_data & IND_DOT):byte_data;
+#endif /* COMMON_CATOD */
 	PORT_DIGITS &= ~mask_digits;
 	PORT_DIGITS |= ((1 << (number_digit + PORT_DIGIT_0)) & flash_digit);	
 	if (++number_digit == NUMBER_DIGIT)

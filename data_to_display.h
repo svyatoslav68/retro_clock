@@ -4,9 +4,10 @@
 #define LENGTH_ARRAY 2 /* Размер массива с отображаемыми числами */
 #define DIGIT_FOR_NUMBER 2 /* Количество цифр для отображения числа */
 
+#define COMMON_ANOD
 #define PINBOARD
 /* Определение констант для отображение символов на семисегментном индикаторе */
-#ifdef PINBOARD
+#ifdef COMMON_CATOD
 #define	IND_ZERO	0b11101011	/* 0xEB Отображение "0"*/
 #define	IND_ONE		0b00101000	/* 0x28 Отображение "1"*/
 #define	IND_TWO		0b10110011	/* 0xB3 Отображение "2"*/
@@ -26,28 +27,28 @@
 #define IND_H       0b01111001  /* 0x76 Отображение "H" */
 #define IND_T       0b01010011  /* 0x78 Отображение "t" */
 #define IND_CLEAR	0b00000000
-#endif
-#ifdef M16BOARD
-#define	IND_ZERO	0b00010100	/* 0xEB Отображение "0"*/
-#define	IND_ONE		0b11010111	/* 0x28 Отображение "1"*/
-#define	IND_TWO		0b01001100	/* 0xB3 Отображение "2"*/
-#define	IND_THREE	0b01000101	/* 0xBA Отображение "3"*/
-#define	IND_FOUR	0b10000111	/* 0x78 Отображение "4"*/
-#define	IND_FIVE	0b00100101	/* 0xDA Отображение "5"*/
-#define	IND_SIX		0b00100100	/* 0xCB Отображение "6"*/
-#define	IND_SEVEN	0b01010111	/* 0xA8 Отображение "7"*/
-#define	IND_EIGHT	0b00000100	/* 0xFB Отображение "8"*/
-#define	IND_NINE	0b00000101	/* 0xFA Отображение "9"*/
-#define	IND_DOT		0b11111011	/* 0x80 Отображение "."*/
-#define	IND_MINUS	0b11101111	/* 0x40 Отображение "-"*/
-#define IND_CEL		0b00001111  /* 0x63 Отображение знака градус */
+#endif  /* COMMON_CATOD */
+#ifdef COMMON_ANOD
+#define	IND_ZERO	0b00010100	/* 0x14 Отображение "0"*/
+#define	IND_ONE		0b11010111	/* 0xD7 Отображение "1"*/
+#define	IND_TWO		0b01001100	/* 0x4C Отображение "2"*/
+#define	IND_THREE	0b01000101	/* 0x45 Отображение "3"*/
+#define	IND_FOUR	0b10000111	/* 0x87 Отображение "4"*/
+#define	IND_FIVE	0b00100101	/* 0x25 Отображение "5"*/
+#define	IND_SIX		0b00100100	/* 0x24 Отображение "6"*/
+#define	IND_SEVEN	0b01010111	/* 0x57 Отображение "7"*/
+#define	IND_EIGHT	0b00000100	/* 0x04 Отображение "8"*/
+#define	IND_NINE	0b00000101	/* 0x05 Отображение "9"*/
+#define	IND_DOT		0b11111011	/* 0xFB Отображение "."*/
+#define	IND_MINUS	0b11101111	/* 0xEF Отображение "-"*/
+#define IND_CEL		0b00001111  /* 0x0F Отображение знака градус */
 #define IND_E		0b00101100
 #define IND_R		0b11101110
-#define IND_S		0b00100101  /* 0x6B Отображение "S" */
-#define IND_H       0b10000110  /* 0x76 Отображение "H" */
-#define IND_T       0b10101100  /* 0x78 Отображение "t" */
+#define IND_S		0b00100101  /* 0x25 Отображение "S" */
+#define IND_H       0b10000110  /* 0x86 Отображение "H" */
+#define IND_T       0b10101100  /* 0xAC Отображение "t" */
 #define IND_CLEAR	0b11111111
-#endif
+#endif /* COMMON_ANOD */
 #ifdef BOARD
 #define	IND_ZERO	0b00111111	/* 0x3F Отображение "0"*/
 #define	IND_ONE		0b00000110	/* 0x06 Отображение "1"*/
@@ -85,7 +86,7 @@ void flash_dot();
 #define DIRECT_DIGITS DDRB
 #define PORT_DIGITS PORTB
 
-#define NUMBER_DIGIT 3 /* Число разрядов индикатора */
+#define NUMBER_DIGIT 4 /* Число разрядов индикатора */
 /* Порты контроллера, используемые для включения разрядов индикатора */
 #define PORT_DIGIT_0 4
 #define PORT_DIGIT_1 5

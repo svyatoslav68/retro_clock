@@ -24,6 +24,8 @@ typedef enum {viewclock,  // отображение часов
 			  notalarm	// остановка будильника
 			  } typemode;
 
+void init_clock();
+void save_alarm_to_eeprom();
 void start_timer1();
 void stop_timer1();
 void change_minute(int8_t);

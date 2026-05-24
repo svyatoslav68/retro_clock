@@ -91,6 +91,7 @@ void long_pressed_button()
 		case setalarmminutes:
 		case setalarmhours:
 			mode = viewalarm;
+			save_alarm_to_eeprom();
 			stop_flashing();
 			break;
 		case alarm:

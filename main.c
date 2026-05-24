@@ -44,6 +44,8 @@ int main(void)
 	//number_flash_digit = 0;
 	//init_test_timer_queue();
 	init();
+	init_clock();
+	init_beeper();
 	init_port_button();
 	mode = viewclock;
 	init_encoder();
@@ -56,7 +58,7 @@ int main(void)
 #if defined(PINBOARD) || defined(M16BOARD)
 	add_new_task_with_delay(display_array, 60, 60);
 	add_new_task_with_delay(flash_digiting, 3000, 3000);
-	add_new_task_with_delay(flash_dot, 1000, 1000);
+	add_new_task_with_delay(flash_dot, 5000, 5000);
 	add_new_task_with_delay(reading_encoder, 2, 2);
 #endif
 	/* Replace with your application code */
@@ -65,11 +67,13 @@ int main(void)
 		//reading_encoder();
 		if (flags & (1 << FLAG_EQUAL)){
 			if(mode == viewclock){
+				 beeper_on();
 				mode = alarm;
 			}
 		}
 		if (flags & (1 << FLAG_NOTEQUAL)){
 			if((mode == notalarm) || (mode == alarm)){
+				 beeper_off();
 				mode = viewclock;
 			}
 		}

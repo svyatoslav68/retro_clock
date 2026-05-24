@@ -22,9 +22,10 @@
 #define PORT_LED_BOARD3 PORTA7
 
 
+/*
 #define PIN_ENCODER_INPUT_1 PORTD2
 #define PIN_ENCODER_INPUT_2 PORTD6
-
+*/
 
 //#define PORT_TEST PORTD4
 

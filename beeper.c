@@ -7,3 +7,17 @@
 
 #include "avr/io.h"
 #include "beeper.h"
+
+
+void init_beeper(){
+	DDR_BEEPER |= (1 << PIN_BEEPER);
+	PORT_BEEPER &= ~(1 << PIN_BEEPER);
+}
+
+void beeper_on(){
+	PORT_BEEPER |= (1 << PIN_BEEPER);
+}
+
+void beeper_off(){
+	PORT_BEEPER &= ~(1 << PIN_BEEPER);
+}

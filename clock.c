@@ -6,6 +6,7 @@
  */ 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/eeprom.h>
 
 #include "data_to_display.h"
 #include "clock.h"
@@ -14,9 +15,18 @@ volatile int8_t clock_array[LENGTH_ARRAY] = {7, 30};
 //volatile uint8_t byte_minutes = 0x00;
 volatile int8_t alarm_array[LENGTH_ARRAY] = {12, 22};
 //volatile uint8_t byte_minutes_alarm = 0x00;
+extern uint8_t eeprom_alarm[LENGTH_ARRAY];
 extern typemode  mode;
 
 extern uint8_t flags;
+
+void init_clock(){
+	eeprom_read_block((void *)alarm_array, (void *)eeprom_alarm, LENGTH_ARRAY);
+}
+
+void save_alarm_to_eeprom(){
+	eeprom_write_block((void *)alarm_array, (void *)eeprom_alarm, LENGTH_ARRAY);
+}
 
 void add_minute();
 
