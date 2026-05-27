@@ -58,7 +58,8 @@ void clicked_button2()
 			next_flash_digit();
 			break;
 		case alarm:
-		 mode = notalarm;
+		    mode = notalarm;
+			beeper_off();
 		 break;
 		default:
 		 break;
@@ -96,6 +97,7 @@ void long_pressed_button()
 			break;
 		case alarm:
 			mode = notalarm;
+			beeper_off();
 			break;
 	}
 }
