@@ -193,6 +193,12 @@
     <Compile Include="RTOS.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="timer_queue.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="timer_queue.h">
+      <SubType>compile</SubType>
+    </Compile>
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
 </Project>

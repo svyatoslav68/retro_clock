@@ -7,6 +7,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/eeprom.h>
+#include "beeper.h"
 
 #include "data_to_display.h"
 #include "clock.h"
@@ -103,5 +104,20 @@ void change_alarm_hour(int8_t direct){
 	}
 	if (*(alarm_array) == -1) {
 		*(alarm_array) =23;
+	}
+}
+
+void comp_time_alarm(){
+	if (flags & (1 << FLAG_EQUAL)){
+		if(mode == viewclock){
+			beeper_on();
+			mode = alarm;
+		}
+	}
+	if (flags & (1 << FLAG_NOTEQUAL)){
+		if((mode == notalarm) || (mode == alarm)){
+			 beeper_off();
+			 mode = viewclock;
+		}
 	}
 }

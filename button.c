@@ -14,6 +14,7 @@
 #include "data_to_display.h"
 #include "button.h"
 #include "clock.h"
+#include "beeper.h"
 //#include "timer_queue.h"
 //#include "tasks.h"
 
@@ -36,6 +37,7 @@ void clicked_button2()
 	switch (mode)
 	{
 		case viewclock:
+		case notalarm:
 		 mode = viewalarm;
 		 break;
 		case viewalarm:

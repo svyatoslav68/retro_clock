@@ -16,6 +16,7 @@
 #include "clock.h"
 #include "encoder.h"
 #include "init2_test.h"
+#include "button.h"
 
 //extern  int8_t number_flash_digit; // Номер мигающего разряда
 volatile typemode  mode;
@@ -60,23 +61,12 @@ int main(void)
 	add_new_task_with_delay(flash_digiting, 3000, 3000);
 	add_new_task_with_delay(flash_dot, 5000, 5000);
 	add_new_task_with_delay(reading_encoder, 2, 2);
+	add_new_task_with_delay(comp_time_alarm, 1, 1);
 #endif
 	/* Replace with your application code */
     while (1) 
     {
 		//reading_encoder();
-		if (flags & (1 << FLAG_EQUAL)){
-			if(mode == viewclock){
-				 beeper_on();
-				mode = alarm;
-			}
-		}
-		if (flags & (1 << FLAG_NOTEQUAL)){
-			if((mode == notalarm) || (mode == alarm)){
-				 beeper_off();
-				mode = viewclock;
-			}
-		}
 		task_manager();
     }
 }

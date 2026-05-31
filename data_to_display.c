@@ -88,10 +88,10 @@ void display_array(void)
 		byte_data = eeprom_read_byte(digits + displayed_number);
 	}
 #ifdef COMMON_CATOD
-	PORT_DISPLAY = (!displayed_dot | (mode != viewclock))?(byte_data | IND_DOT):byte_data;
+	PORT_DISPLAY = (!displayed_dot | !((mode == viewclock)|(mode == alarm)|(mode == notalarm)))?(byte_data | IND_DOT):byte_data;
 #endif /* COMMON_CATOD */
 #ifdef COMMON_ANOD
-	PORT_DISPLAY = (!displayed_dot | (mode != viewclock))?(byte_data & IND_DOT):byte_data;
+	PORT_DISPLAY = (!displayed_dot | !((mode == viewclock)|(mode == alarm)|(mode == notalarm)))?(byte_data & IND_DOT):byte_data;
 #endif /* COMMON_CATOD */
 	PORT_DIGITS &= ~mask_digits;
 	PORT_DIGITS |= ((1 << (number_digit + PORT_DIGIT_0)) & flash_digit);	

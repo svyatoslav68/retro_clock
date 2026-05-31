@@ -9,63 +9,11 @@
 #include "button.h"
 #include "ctrl_timer.h"
 #include "init2_test.h"
+#include "timer_queue.h"
 
-typedef struct {
-	TPTR func;
-	size_t current_tik; /* текущий счет */
-	size_t num_tiks;
-	/* количество счетов для задержки выполнения функции.
-	 * если num_tiks == 0, то func выполняется единожды */
-} queue_node_t;
-
-typedef struct {
-	queue_node_t *nodes;
-	size_t size;
-} queue_t;
-
-queue_node_t timer_queue[TIMER_QUEUE_SIZE];
-queue_t timer_tasks;// = {timer_queue, 0};
-
-queue_node_t timer_task_NULL = {NULL, 0, 0};
-	
-void swap (queue_node_t *first, queue_node_t *second);
-TPTR get_top_task();
-queue_node_t pop_task();
-
-
-uint8_t parent(const uint8_t i) {
-	if (i > 0)
-	return (i - 1) / 2;
-	else
-	return 0;
-}
-
-uint8_t leftChild(const uint8_t i) {
-	return 2 * i + 1;
-}
-
-uint8_t rightChild(const uint8_t i) {
-	return 2 * i + 2;
-}
-
-void up(queue_node_t *queue, uint8_t i) {
-	while (i != 0 && ((queue+i)->current_tik < (queue+parent(i))->current_tik)) {
-		swap(queue+i, queue+parent(i));
-		i = parent(i);
-	}
-}
-
-void down(queue_node_t *queue, const uint8_t size, uint8_t i) {
-	while (i < size / 2) {
-		int minI = leftChild(i);
-		if (rightChild(i) < size && ((queue+rightChild(i))->current_tik < (queue+leftChild(i))->current_tik))
-		minI = rightChild(i);
-		if ((queue+i)->current_tik <= (queue+minI)->current_tik)
-		return;
-		swap(queue+i, queue+minI);
-		i = minI;
-	}
-}
+extern queue_node_t timer_queue[];//[TIMER_QUEUE_SIZE];
+extern queue_t timer_tasks;
+extern queue_node_t timer_task_NULL;
 
 /*_Bool min_node(const queue_node_t *A, const queue_node_t *B)
 {
@@ -80,98 +28,22 @@ void heapify(queue_node_t *queue, size_t size, size_t i, _Bool (*cmp)(queue_node
 	
 }*/
 
-TPTR get_top_task()
-{
-	if (!(timer_tasks.size))
-	return NULL;
-	queue_node_t *top_node = timer_tasks.nodes;
-	return top_node->func;
-}
 
-queue_node_t less_node(const queue_node_t first, const queue_node_t second)
-{
-	return first.num_tiks<second.num_tiks?first:second;
-}
-
-void swap (queue_node_t *first, queue_node_t *second)
-{
-	queue_node_t tmp = *first;
-	*first = *second;
-	*second = tmp;
-}
-
-void add_new_task(const queue_node_t new_task)
-{
-	if (timer_tasks.size + 1 == TIMER_QUEUE_SIZE)
-	/* обработка ошибки - переполнение очереди */
-	return;
-	/* Запоминаем состояние регистра флагов прерываний */
-	uint8_t tmp_TIMSK = TIMSK;
-	/* Выключаем прерывание по таймеру, поскольку работаем с очередью задач таймера */
-	TIMSK &= ~(1 << TIMER_INTERRUPT_FLAG);
-	*(timer_tasks.nodes + (timer_tasks.size)++) = new_task;
-	up(timer_tasks.nodes, timer_tasks.size - 1);
-	/* Восстанавливаем содержимое регистра флагов прерываний */
-	TIMSK = tmp_TIMSK;
-}
-
-void add_new_task_with_delay(const TPTR task, const uint16_t delay, const uint16_t tiks)
-{
-	const queue_node_t timer_task = {task, delay, tiks};
-	add_new_task(timer_task);
-}
-
-void add_task_with_repeat(queue_node_t node)
-/* Добавление задачи в очередь задач с последующим добавлением в очередь таймера */
-{
-	/* Запоминаем состояние регистра флагов прерываний */
-	uint8_t tmp_TIMSK = TIMSK;
-	/* Выключаем прерывание по таймеру, поскольку работаем с очередью задач таймера */
-	TIMSK &= ~(1 << TIMER_INTERRUPT_FLAG);
-	add_task(node.func);
-	add_new_task(node);
-	TIMSK = tmp_TIMSK;
-}
-
-queue_node_t pop_task()
-{
-	if(timer_tasks.size == 0)
-	return timer_task_NULL;
-	/* Запоминаем состояние регистра флагов прерываний */
-	uint8_t tmp_TIMSK = TIMSK;
-	/* Выключаем прерывание по таймеру, поскольку работаем с очередью задач таймера */
-	TIMSK &= ~(1 << TIMER_INTERRUPT_FLAG);
-	queue_node_t result = *timer_tasks.nodes;
-	swap(timer_tasks.nodes,(timer_tasks.nodes + timer_tasks.size - 1));
-	//swap(timer_tasks.nodes,(timer_tasks.nodes + TIMER_QUEUE_SIZE - 1));
-	down(timer_tasks.nodes, --timer_tasks.size, 0);
-	/* Восстанавливаем содержимое регистра флагов прерываний */
-	TIMSK = tmp_TIMSK;
-	return result;
-}
-
-TPTR pop_func()
-{
-	queue_node_t temp = pop_task();
-	return temp.func;
-}
-
-void execute_task()
+/*void execute_task()
 {
 	if(timer_tasks.size == 0)
 	return;
 	const queue_node_t root_node = *(timer_tasks.nodes);
-	/* Запоминаем состояние регистра флагов прерываний */
 	uint8_t tmp_TIMSK = TIMSK;
-	/* Выключаем прерывание по таймеру, поскольку работаем с очередью задач таймера */
 	TIMSK &= ~(1 << TIMER_INTERRUPT_FLAG);
 	swap(timer_tasks.nodes,(timer_tasks.nodes + timer_tasks.size - 1));
 	down(timer_tasks.nodes, --timer_tasks.size, 0);
-	/* Восстанавливаем содержимое регистра флагов прерываний */
+	// Восстанавливаем содержимое регистра флагов прерываний 
 	TIMSK = tmp_TIMSK;
 	root_node.func();
 	//printf("execute func!\nResult = %d\n", root_node.func(root_node.num_tiks));
-}
+}*/
+
 void init_timer_queue()
 {
 	for(int i=0; i < TIMER_QUEUE_SIZE; ++i){
@@ -199,13 +71,7 @@ void stop_timer0()
 }
 
 
-void swap_timer_task(queue_node_t *first, queue_node_t *second)
-{
-	queue_node_t *tmp = first;
-	first = second;
-	second = tmp;
-}
-										
+							
 /*void add_timer_task(queue_node_t task)
 {
 	CLI_M16;
@@ -234,16 +100,6 @@ void timer_service(void)
 }
 */
 
-void init_test_timer_queue(void)
-/* Инициализация таймера для самотестирования */
-{
-	//queue_node_t blank_led = {};
-#if defined(PINBOARD) || defined(M16BOARD)
-	add_new_task_with_delay(display_array, 60, 60);
-	add_new_task_with_delay(flash_digiting, 3000, 3000);
-	add_new_task_with_delay(reading_encoder, 2, 2);
-#endif
-}
 
 #ifdef DEBUG_INT0
 ISR(TIMER2_OVF_vect) {

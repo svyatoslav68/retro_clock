@@ -2,7 +2,6 @@
 #define CTRL_TIMER_H
 
 //#include <stdint.h>
-#define TIMER_QUEUE_SIZE 10
 
 #define  DELAY_TIMER_MS 10UL /* Время задержки, генерируемой таймером в сотых долях мс */
 #define  DIVIDER_0 64UL      /* Предделитель для таймера-счетчика 0 */
@@ -17,15 +16,6 @@
 #define VALUE_OCR0 ((F_CPU*DELAY_TIMER_MS)/(DIVIDER_0*100000))
 #define VALUE_TCNT0 (256UL-F_CPU/(DIVIDER_0*DELAY_TIMER_MS*10))
 
-/* Флаг разрешения прерывания, по которому работает очередь задач таймера */
-#define TIMER_INTERRUPT_FLAG OCIE0
-
-//extern type_queue timer_tasks;
-     
-/*typedef struct {
-	TPTR timer_task; // Задача от таймера 
-	uint16_t tiks; // Количество тиков до выполнения 
-} type_timer_task;*/
 
 struct queue_node_t; 
 struct queue_t;
