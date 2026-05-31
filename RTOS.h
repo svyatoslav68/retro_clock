@@ -1,11 +1,11 @@
 #ifndef RTOS_H
 #define RTOS_H
 
-#define TASK_QUEUE_SIZE 10
+#define TASK_QUEUE_SIZE 20
 
 typedef void (*TPTR)(void);
 
-void idle(void);
+//void idle(void);
 
 void init_task_queue(void);
 void task_manager(void);

@@ -40,7 +40,7 @@ void task_manager(void) /* ядро диспетчера. Он будет крутиться в главном цикле и
 			//if (task_queue[index_source]==idle) break;
 			task_queue[index_dest] = task_queue[index_source];
 		}
-		task_queue[index_source]=idle;
+		task_queue[TASK_QUEUE_SIZE - 1]=idle;
 	} 
 	/* Восстанавливаем бит прерываний */
 	end_function:
