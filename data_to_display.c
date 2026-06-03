@@ -3,7 +3,6 @@
 #include <stddef.h>
 #include "RTOS.h"
 #include "button.h"
-//#include "timer_queue.h"
 #include "encoder.h"
 #include "clock.h"
 #include "data_to_display.h"

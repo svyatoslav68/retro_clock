@@ -21,42 +21,49 @@ void init_task_queue(void){
 	}
 }
 
-void task_manager(void) /* ядро диспетчера. Он будет крутиться в главном цикле и вызывать задачи на выполнение */
+/* Ядро диспетчера. Он будет крутиться в главном цикле и вызывать задачи на выполнение */
+void task_manager(void) 
 {
+	uint8_t reg_status = 0;
 	PORT_TEST |= (1 << ONE_PIN_TEST4);
 	/* Объявляем переменную указатель на функцию, в которую будем помещать задачи из очереди */
 	TPTR task_for_execute = idle;
-	//stop_timer0();
-	CLI_M16;
+	/* Запоминаем регистр состояний контроллера */ 
+	reg_status = SREG;
+	/* Сбрасываем флаг разрешения прерываний */
+	SREG &= ~(0b10000000);
 	task_for_execute = task_queue[0]; /* Берем первую задачу из очереди  и выполняем её */
 	task_for_execute();
 	if (task_for_execute == idle) {
 		/* Если это пустышка, то выходим */
 		goto end_function;
 	}
-	else { /* если не пустышка, то сдвигаем все остальные задачи вверх, последнюю делаем пустышкой */
+	else {
+		/* если не пустышка, то сдвигаем все остальные задачи вверх, последнюю делаем пустышкой */
 		uint8_t index_dest, index_source;
-		for (index_dest = 0,index_source=1; index_dest < TASK_QUEUE_SIZE -1; ++index_dest,++index_source){
+		for (index_dest = 0, index_source=1; index_dest < TASK_QUEUE_SIZE - 1; 
+															++index_dest, ++index_source){
 			//if (task_queue[index_source]==idle) break;
 			task_queue[index_dest] = task_queue[index_source];
 		}
-		task_queue[TASK_QUEUE_SIZE - 1]=idle;
+		task_queue[TASK_QUEUE_SIZE - 1] = idle;
 	} 
-	/* Восстанавливаем бит прерываний */
 	end_function:
-	//start_timer0();
-	SEI_M16;
+	/* Восстанавливаем бит прерываний */
+	SREG = reg_status;
 	PORT_TEST &= ~(1 << ONE_PIN_TEST4);
 }
 
 void add_task(TPTR TS)
 {
-	uint8_t flag_interrupt = 0;
+	uint8_t reg_status = 0;
 	TPTR *task_for_execute = (TPTR*)task_queue;
-	if (SREG & 0b10000000) {
-		CLI_M16;
-		flag_interrupt = 1;
-	}
+	/* Запоминаем регистр состояний контроллера */ 
+	reg_status = SREG;
+	/* Сбрасываем флаг разрешения прерываний */
+	SREG &= ~(0b10000000);
+	/* Пробегаемся по всей очереди, ищем ячейку с idle, 
+	 * 						если натыкаемся на такую же задачу, как добавляемую - выходим */
 	while ((task_for_execute < (TPTR *)task_queue + TASK_QUEUE_SIZE) && (*task_for_execute != TS)) {
 		if ((*task_for_execute) == idle) {
 			*task_for_execute = TS;
@@ -64,8 +71,7 @@ void add_task(TPTR TS)
 		}
 		++task_for_execute;
 	}
-	if (flag_interrupt) {
-		SEI_M16;
-	}
+	/* Восстанавливаем бит прерываний */
+	SREG = reg_status;
 }
 

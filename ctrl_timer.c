@@ -15,35 +15,6 @@ extern queue_node_t timer_queue[];//[TIMER_QUEUE_SIZE];
 extern queue_t timer_tasks;
 extern queue_node_t timer_task_NULL;
 
-/*_Bool min_node(const queue_node_t *A, const queue_node_t *B)
-{
-	return A->current_tik < B->current_tik? 1:0;
-}
-
-void heapify(queue_node_t *queue, size_t size, size_t i, _Bool (*cmp)(queue_node_t *, queue_node_t *))
-{
-	size_t left_node = leftChild(i);
-	size_t right_node = rightChild(i);
-	size_t current_node = i;
-	
-}*/
-
-
-/*void execute_task()
-{
-	if(timer_tasks.size == 0)
-	return;
-	const queue_node_t root_node = *(timer_tasks.nodes);
-	uint8_t tmp_TIMSK = TIMSK;
-	TIMSK &= ~(1 << TIMER_INTERRUPT_FLAG);
-	swap(timer_tasks.nodes,(timer_tasks.nodes + timer_tasks.size - 1));
-	down(timer_tasks.nodes, --timer_tasks.size, 0);
-	// Восстанавливаем содержимое регистра флагов прерываний 
-	TIMSK = tmp_TIMSK;
-	root_node.func();
-	//printf("execute func!\nResult = %d\n", root_node.func(root_node.num_tiks));
-}*/
-
 void init_timer_queue()
 {
 	for(int i=0; i < TIMER_QUEUE_SIZE; ++i){
@@ -70,37 +41,6 @@ void stop_timer0()
 	TCCR0 &= ~CLOCK_SELECT_BITS_TIMER0;
 }
 
-
-							
-/*void add_timer_task(queue_node_t task)
-{
-	CLI_M16;
-	for (int i = 0; i < TIMER_QUEUE_SIZE; ++i)
-	{
-		if(timer_queue[i].timer_task == idle){
-			timer_queue[i] = task;
-			break;
-		}
-	}
-	SEI_M16;
-}*/
-
-/*
-void timer_service(void)
-{
-	queue_node_t task_from_timer_queue;
-	for (uint8_t index = 0; index < TIMER_QUEUE_SIZE+1; ++index){
-		task_from_timer_queue = timer_queue[index];
-		if (!task_from_timer_queue.func)
-			continue;
-		if (!(--task_from_timer_queue.num_tiks)){
-			(task_from_timer_queue.func)();
-		}
-	}	
-}
-*/
-
-
 #ifdef DEBUG_INT0
 ISR(TIMER2_OVF_vect) {
 	/* Далее строки для отладки  */
@@ -115,8 +55,10 @@ ISR(TIMER0_COMP_vect) {
 	/* Далее боевая функция */
 	queue_node_t *current_timer_task = timer_tasks.nodes;//(queue_node_t *)timer_tasks.nodes;
 	queue_node_t node_for_repeat = timer_task_NULL;
-	while (current_timer_task < (timer_queue + timer_tasks.size)){ // Проходим по всему списку задач таймера
-		if ((current_timer_task->func) && (!(current_timer_task->current_tik))) {// Если стало 0, то добавиить в очередь
+	/* Проходим по всему списку задач таймера */
+	while (current_timer_task < (timer_queue + timer_tasks.size)){ 
+		// Если стало 0, то добавить в очередь
+		if ((current_timer_task->func) && (!(current_timer_task->current_tik))) {
 			if (current_timer_task->num_tiks) { // Если num_tick, значит это повторяемая задача
 				node_for_repeat = pop_task();   // Создать переменную, содержащую такую же задачу
 				node_for_repeat.current_tik = node_for_repeat.num_tiks; // Восстановить current_tik

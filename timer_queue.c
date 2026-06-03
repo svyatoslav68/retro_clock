@@ -63,11 +63,6 @@ TPTR get_top_task()
 	return top_node->func;
 }
 
-queue_node_t less_node(const queue_node_t first, const queue_node_t second)
-{
-	return first.num_tiks<second.num_tiks?first:second;
-}
-
 void swap (queue_node_t *first, queue_node_t *second)
 {
 	queue_node_t tmp = *first;
