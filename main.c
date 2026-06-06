@@ -58,7 +58,7 @@ int main(void)
 	start_timer1();
 #endif    
 #if defined(PINBOARD) || defined(M16BOARD)
-	add_new_task_with_delay(display_array, 60, 60);
+	add_new_task_with_delay(display_array, 40, 40);
 	add_new_task_with_delay(flash_digiting, 3000, 3000);
 	add_new_task_with_delay(flash_dot, 5000, 5000);
 	add_new_task_with_delay(reading_encoder, 2, 2);

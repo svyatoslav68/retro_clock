@@ -55,24 +55,27 @@ ISR(TIMER0_COMP_vect) {
 	/* Далее боевая функция */
 	queue_node_t *current_timer_task = timer_tasks.nodes;//(queue_node_t *)timer_tasks.nodes;
 	queue_node_t node_for_repeat = timer_task_NULL;
-	/* Проходим по всему списку задач таймера */
-	while (current_timer_task < (timer_queue + timer_tasks.size)){ 
-		// Если стало 0, то добавить в очередь
-		if ((current_timer_task->func) && (!(current_timer_task->current_tik))) {
-			if (current_timer_task->num_tiks) { // Если num_tick, значит это повторяемая задача
-				node_for_repeat = pop_task();   // Создать переменную, содержащую такую же задачу
-				node_for_repeat.current_tik = node_for_repeat.num_tiks; // Восстановить current_tik
-				add_task_with_repeat(node_for_repeat);  // Добавить созданную задачу в список задач таймера
-				//continue;
-			}
-			else {
-				add_task(pop_func());  // Извлечь функцию и отправить её в список задач на выполнение
-			}
+	/* Проходим по всему списку задач таймера 
+	   и уменьшить current_tik на единицу */
+	current_timer_task = timer_tasks.nodes;
+	// Если стало 0, то добавить в очередь	
+	if ((current_timer_task->func) && (!(current_timer_task->current_tik))) {
+		if (current_timer_task->num_tiks) { // Если num_tick, значит это повторяемая задача
+			node_for_repeat = pop_task();   // Создать переменную, содержащую такую же задачу
+			node_for_repeat.current_tik = node_for_repeat.num_tiks; // Восстановить current_tik
+			add_task_with_repeat(node_for_repeat);  // Добавить созданную задачу в список задач таймера
+			//continue;
 		}
 		else {
-			--current_timer_task->current_tik; // Уменьшить current_tik
+			add_task(pop_func());  // Извлечь функцию и отправить её в список задач на выполнение
+		}	
+	}
+	else {
+		while (current_timer_task < (timer_queue + timer_tasks.size)){
+			if ((current_timer_task->current_tik) > 0)
+			--(current_timer_task->current_tik); // Уменьшить current_tik
+			++current_timer_task;
 		}
-		++current_timer_task;
 	}
 	PORT_TEST &= ~(1 << ONE_PIN_TEST1);
 #ifdef DEBUG_INT0
