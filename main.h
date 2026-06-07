@@ -3,7 +3,7 @@
 
 /* Определение режима отладки */
 //#define DEBUG_INT0
-//#define F_CPU 7372800
+#define F_CPU 16000000
 /* Именование портов ввода/вывода */
 //#define PORT_ENCODER PORTD
 #define PORT_LEDS_PINBOARD PORTD

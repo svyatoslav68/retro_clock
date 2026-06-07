@@ -109,6 +109,7 @@ queue_node_t pop_task()
 	TIMSK &= ~(1 << TIMER_INTERRUPT_FLAG);
 	queue_node_t result = *timer_tasks.nodes;
 	swap(timer_tasks.nodes,(timer_tasks.nodes + timer_tasks.size - 1));
+	*(timer_tasks.nodes + timer_tasks.size - 1) = timer_task_NULL;
 	//swap(timer_tasks.nodes,(timer_tasks.nodes + TIMER_QUEUE_SIZE - 1));
 	down(timer_tasks.nodes, --timer_tasks.size, 0);
 	/* Восстанавливаем содержимое регистра флагов прерываний */
@@ -116,8 +117,24 @@ queue_node_t pop_task()
 	return result;
 }
 
-TPTR pop_func()
+void exec_top_task(){
+	/* Запуск задачи с верхушки очереди, если её current_tik == 0,
+	 * удаление её из очереди и добавление её в очередь, 
+	 * если num_tiks != 0 */
+	queue_node_t *top_timer_task = timer_tasks.nodes;
+	// Если стало 0, то добавить в очередь
+	if ((top_timer_task->func) && (!(top_timer_task->current_tik))) {
+		queue_node_t node_for_repeat = pop_task();   // Создать переменную, содержащую такую же задачу
+		add_task(node_for_repeat.func);
+		if (node_for_repeat.num_tiks) { // Если num_tick, значит это повторяемая задача
+			node_for_repeat.current_tik = node_for_repeat.num_tiks; // Восстановить current_tik
+			add_new_task(node_for_repeat);  // Добавить созданную задачу в список задач таймера
+		}
+	}
+}
+
+/*TPTR pop_func()
 {
 	queue_node_t temp = pop_task();
 	return temp.func;
-}
+}*/

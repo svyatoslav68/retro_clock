@@ -5,6 +5,7 @@
 #include "RTOS.h"
 #include "ctrl_timer.h"
 #include "encoder.h"
+#include "timer_queue.h"
 //#include "timer_queue.h"
 
 
@@ -32,6 +33,7 @@ void task_manager(void)
 	reg_status = SREG;
 	/* Сбрасываем флаг разрешения прерываний */
 	SREG &= ~(0b10000000);
+	exec_top_task(); /* Запускаем задачу из очереди таймера */
 	task_for_execute = task_queue[0]; /* Берем первую задачу из очереди  и выполняем её */
 	task_for_execute();
 	if (task_for_execute == idle) {

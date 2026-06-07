@@ -111,6 +111,7 @@ void definition_longtime()
 {
     if (flags_button & (1 << FLAG_BUTTON_PRESSED)) {
 		flags_button |= (1 << FLAG_LONGTIME_BUTTON);
+		add_task(pisk);
         add_task(long_pressed_button);
     }
 }

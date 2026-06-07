@@ -13,9 +13,11 @@
 #define PORT_BEEPER PORTC
 #define DDR_BEEPER DDRC
 #define PIN_BEEPER PORTC0
+#define NUMBER_TAKTS_FOR_PISK 100
 
 void init_beeper();
 void beeper_on();
 void beeper_off();
+void pisk();
 
 #endif /* BEEPER_H_ */

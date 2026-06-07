@@ -24,7 +24,7 @@ void init_timer_queue();
 void start_timer0();
 void stop_timer0();
 //void add_timer_task(type_queue_node task);
-void init_test_timer_queue(void);
+//void init_test_timer_queue(void);
 void add_new_task_with_delay(const TPTR task, const uint16_t delay, const uint16_t tiks);
 
 #endif // CTRL_TIMER_H
