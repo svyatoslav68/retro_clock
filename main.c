@@ -21,7 +21,7 @@
 
 //extern  int8_t number_flash_digit; // Номер мигающего разряда
 volatile typemode  mode;
-volatile uint8_t flags = 0x00;
+
 
 void init() {
 	/* Установка портов ввода/вывода */

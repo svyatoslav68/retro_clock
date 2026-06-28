@@ -10,6 +10,7 @@
 volatile uint8_t data_for_display[LENGTH_ARRAY] = {1,45};
 extern int8_t clock_array[LENGTH_ARRAY];
 extern int8_t alarm_array[LENGTH_ARRAY];
+extern int8_t timer_array[LENGTH_ARRAY];
 extern typemode  mode;
 uint8_t mask_digits = 0x00; // Маска, биты соответстующие отображаемым разрядам равны "1"
 volatile uint8_t flash_digit = 0;
@@ -77,6 +78,11 @@ void display_array(void)
 	 case setalarmhours:
 		displayed_number = *(alarm_array + (LENGTH_ARRAY-number_digit/DIGIT_FOR_NUMBER-1));
 		break;
+	 case viewtimer:
+	 case settimerminutes:
+	 case settimerhours:
+		displayed_number = *(timer_array + (LENGTH_ARRAY-number_digit/DIGIT_FOR_NUMBER-1));
+		break;	
 	 default:
 		;
 	}
