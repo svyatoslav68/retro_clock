@@ -26,6 +26,7 @@ typedef struct {
 	size_t size;
 } queue_t;
 
+void init_timer_queue();
 queue_node_t pop_task();
 void add_new_task(const queue_node_t new_task);
 void add_task_with_repeat(const queue_node_t node);

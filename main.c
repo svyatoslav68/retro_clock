@@ -49,6 +49,7 @@ int main(void)
 	init_clock();
 	init_beeper();
 	init_port_button();
+	init_port_timer();
 	mode = viewclock;
 	init_encoder();
 #ifdef DEBUG_INT0

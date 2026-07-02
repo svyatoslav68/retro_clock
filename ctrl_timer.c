@@ -6,23 +6,16 @@
 #include "data_to_display.h"
 #include "main.h"
 #include "RTOS.h"
-#include "button.h"
+#include "timer_queue.h"
+//#include "button.h"
 #include "ctrl_timer.h"
 #include "init2_test.h"
-#include "timer_queue.h"
 
 extern queue_node_t timer_queue[];//[TIMER_QUEUE_SIZE];
 extern queue_t timer_tasks;
 extern queue_node_t timer_task_NULL;
 
-void init_timer_queue()
-{
-	for(int i=0; i < TIMER_QUEUE_SIZE; ++i){
-		timer_queue[i] = timer_task_NULL;
-	}
-	timer_tasks.nodes = timer_queue;
-	timer_tasks.size = 0;
-}
+
 
 void start_timer0()
 /* Установка таймера 0 для формирования прерывания 1мс */
@@ -70,12 +63,4 @@ ISR(TIMER0_COMP_vect) {
 }
 
 
-ISR (INT1_vect)
-{
-	/* Отключим прерывание. Включим после срабатывания таймера. */
-	GICR &= ~(1 << INT1);
-	/* Прерывание от кнопки ставит в очередь процедуру чтения состояния кнопки, 
-	которая будет определеять состояние после задержки в 20мс */
-	queue_node_t read_button_after_delay = {read_button, DELAY_ANTIDREBEZG, 0};
-	add_new_task(read_button_after_delay);
-}
+

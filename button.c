@@ -11,6 +11,7 @@
 #include "main.h"
 #include "RTOS.h"
 #include "ctrl_timer.h"
+#include "timer_queue.h"
 #include "data_to_display.h"
 #include "button.h"
 #include "clock.h"
@@ -25,6 +26,18 @@
 
 static uint8_t flags_button = 0x00;
 extern typemode  mode;
+
+void read_button();
+
+ISR (INT1_vect)
+{
+	/* Отключим прерывание. Включим после срабатывания таймера. */
+	GICR &= ~(1 << INT1);
+	/* Прерывание от кнопки ставит в очередь процедуру чтения состояния кнопки, 
+	которая будет определеять состояние после задержки в 20мс */
+	queue_node_t read_button_after_delay = {read_button, DELAY_ANTIDREBEZG, 0};
+	add_new_task(read_button_after_delay);
+}
 
 void init_port_button(){
 	DIRECT_BUTTONS &= ~(1 << PIN_BUTTON);
@@ -134,9 +147,11 @@ void definition_longtime()
 {
     if (flags_button & (1 << FLAG_BUTTON_PRESSED)) {
 		flags_button |= (1 << FLAG_LONGTIME_BUTTON);
-		add_task(pisk);
-        add_task(long_pressed_button);
-    }
+		if (!(PIN_BUTTONS & (1 << PIN_BUTTON))) { /* Если кнопка нажата */
+			add_task(pisk);
+			add_task(long_pressed_button);
+		}
+	}
 }
 
 void read_button()

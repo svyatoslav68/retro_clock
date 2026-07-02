@@ -20,6 +20,14 @@ void swap (queue_node_t *first, queue_node_t *second);
 TPTR get_top_task();
 queue_node_t pop_task();
 
+void init_timer_queue()
+{
+	for(int i=0; i < TIMER_QUEUE_SIZE; ++i){
+		timer_queue[i] = timer_task_NULL;
+	}
+	timer_tasks.nodes = timer_queue;
+	timer_tasks.size = 0;
+}
 
 uint8_t parent(const uint8_t i) {
 	if (i > 0)
@@ -74,6 +82,7 @@ void add_new_task(const queue_node_t new_task)
 {
 	if (timer_tasks.size + 1 == TIMER_QUEUE_SIZE)
 	/* обработка ошибки - переполнение очереди */
+	// init_timer_queue();
 	return;
 	/* Запоминаем состояние регистра флагов прерываний */
 	uint8_t tmp_TIMSK = TIMSK;
