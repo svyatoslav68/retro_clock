@@ -24,7 +24,8 @@ void enable_encoder(){
 }
 
 void disable_encoder(){
-	init_timer_queue_with_tasks();
+	//init_timer_queue_with_tasks();
+	//delete_task_from_queue(reading_encoder);
 }
 
 void reading_encoder(){

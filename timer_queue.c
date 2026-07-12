@@ -165,7 +165,7 @@ queue_node_t pop_task()
 
 void delete_task_from_queue(const TPTR task){
 	for (queue_node_t *current_task = timer_tasks.nodes; current_task < timer_tasks.nodes + timer_tasks.size; ++current_task){
-		if (current_task == &task) {
+		if (current_task->func == task) {
 			swap(current_task, timer_tasks.nodes + timer_tasks.size - 1);
 			*(timer_tasks.nodes + timer_tasks.size - 1) = timer_task_NULL;
 			down(current_task, --timer_tasks.size, 0);

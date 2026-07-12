@@ -87,7 +87,7 @@ void display_array(void)
 		;
 	}
 	if (DIGIT_FOR_NUMBER > 1) {
-		byte_data = eeprom_read_byte(digits + (number_digit%2)?displayed_number/10:displayed_number%10); // Считываем из ПЗУ байт соответсвующий цифре
+		byte_data = eeprom_read_byte(digits + ((number_digit%2)?displayed_number/10:displayed_number%10)); // Считываем из ПЗУ байт соответсвующий цифре
 	}
 	else {
 		byte_data = eeprom_read_byte(digits + displayed_number);
