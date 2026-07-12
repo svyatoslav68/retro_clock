@@ -12,10 +12,11 @@
 #include "RTOS.h"
 #include "ctrl_timer.h"
 #include "data_to_display.h"
+#include "encoder.h"
 #include "button.h"
 #include "clock.h"
 #include "beeper.h"
-//#include "timer_queue.h"
+#include "timer_queue.h"
 //#include "tasks.h"
 
 
@@ -41,7 +42,12 @@ void clicked_button2()
 		 mode = viewalarm;
 		 break;
 		case viewalarm:
+		 mode = viewtimer;
+		 break;
+		case viewtimer:
+		 beeper_off();
 		 mode = viewclock;
+		 init_clock();
 		 break;
 		case setclockminutes:
 			mode = setclockhours;
@@ -59,6 +65,14 @@ void clicked_button2()
 			mode = setalarmminutes;
 			next_flash_digit();
 			break;
+		case settimerminutes:
+			mode = settimerhours;
+			next_flash_digit();
+			break;
+		case settimerhours:
+			mode = settimerminutes;
+			next_flash_digit();
+			break;	
 		case alarm:
 		    mode = notalarm;
 			beeper_off();
@@ -79,28 +93,46 @@ void long_pressed_button()
 		case notalarm:
 			mode = setclockminutes;
 			//stop_timer1();
+			enable_encoder();
 			next_flash_digit();
 			break;
 		case viewalarm:
 			mode = setalarmminutes;
 			//start_timer1();
+			enable_encoder();
+			next_flash_digit();
+			break;
+		case viewtimer:
+			mode = settimerminutes;
+			enable_encoder();
 			next_flash_digit();
 			break;
 		case setclockminutes:
 		case setclockhours:
 			mode = viewclock;
+			disable_encoder();
 			stop_flashing();
 			break;
 		case setalarmminutes:
 		case setalarmhours:
 			mode = viewalarm;
+			disable_encoder();
 			save_alarm_to_eeprom();
 			stop_flashing();
 			break;
-		case alarm:
-			mode = notalarm;
-			beeper_off();
+		case settimerminutes:
+		case settimerhours:
+			mode = viewtimer;
+			disable_encoder();
+			save_timer_to_eeprom();
+			stop_flashing();
 			break;
+		case alarm:
+			/*mode = notalarm;
+			beeper_off();
+			break;*/
+		default:
+			;	
 	}
 }
 
@@ -133,6 +165,7 @@ void read_button()
             add_task(clicked_button2);
         }
 		/* В любом случае, при отпускании кнопки сбрасываем флаг длинного нажатия*/
+		delete_task_from_queue(definition_longtime);
 		flags_button &= ~(1 << FLAG_LONGTIME_BUTTON); 
 	}
     else {

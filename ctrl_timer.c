@@ -15,15 +15,6 @@ extern queue_node_t timer_queue[];//[TIMER_QUEUE_SIZE];
 extern queue_t timer_tasks;
 extern queue_node_t timer_task_NULL;
 
-void init_timer_queue()
-{
-	for(int i=0; i < TIMER_QUEUE_SIZE; ++i){
-		timer_queue[i] = timer_task_NULL;
-	}
-	timer_tasks.nodes = timer_queue;
-	timer_tasks.size = 0;
-}
-
 void start_timer0()
 /* Установка таймера 0 для формирования прерывания 1мс */
 {

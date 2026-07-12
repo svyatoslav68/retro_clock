@@ -9,7 +9,10 @@
 #include <stdint.h>
 #include <stddef.h>
 #include "RTOS.h"
+#include "data_to_display.h"
+#include "clock.h"
 #include "timer_queue.h"
+
 
 queue_node_t timer_queue[TIMER_QUEUE_SIZE];
 queue_t timer_tasks;// = {timer_queue, 0};
@@ -20,6 +23,38 @@ void swap (queue_node_t *first, queue_node_t *second);
 TPTR get_top_task();
 queue_node_t pop_task();
 
+
+void init_timer_queue()
+{
+	for(int i=0; i < TIMER_QUEUE_SIZE; ++i){
+		timer_queue[i] = timer_task_NULL;
+	}
+	timer_tasks.nodes = timer_queue;
+	timer_tasks.size = 0;
+}
+
+void init_timer_queue_with_tasks()
+{
+	const queue_node_t display_task = {display_array, 30, 30};
+	const queue_node_t blinking_task = {flash_digiting, 3000, 3000};
+	const queue_node_t blink_dot_task = {flash_dot, 5000, 5000};
+	const queue_node_t comp_time_task = {comp_time_alarm, 500, 500};
+	/* Запоминаем состояние регистра флагов прерываний */
+	uint8_t tmp_TIMSK = TIMSK;
+	/* Выключаем прерывание по таймеру, поскольку работаем с очередью задач таймера */
+	TIMSK &= ~(1 << TIMER_INTERRUPT_FLAG);
+	init_timer_queue();
+	*(timer_tasks.nodes + (timer_tasks.size)++) = display_task;
+	up(timer_tasks.nodes, timer_tasks.size - 1);
+	*(timer_tasks.nodes + (timer_tasks.size)++) = blinking_task;
+	up(timer_tasks.nodes, timer_tasks.size - 1);
+	*(timer_tasks.nodes + (timer_tasks.size)++) = blink_dot_task;
+	up(timer_tasks.nodes, timer_tasks.size - 1);
+	*(timer_tasks.nodes + (timer_tasks.size)++) = comp_time_task;
+	up(timer_tasks.nodes, timer_tasks.size - 1);
+	/* Восстанавливаем содержимое регистра флагов прерываний */
+	TIMSK = tmp_TIMSK;
+}
 
 uint8_t parent(const uint8_t i) {
 	if (i > 0)
@@ -79,7 +114,18 @@ void add_new_task(const queue_node_t new_task)
 	uint8_t tmp_TIMSK = TIMSK;
 	/* Выключаем прерывание по таймеру, поскольку работаем с очередью задач таймера */
 	TIMSK &= ~(1 << TIMER_INTERRUPT_FLAG);
-	*(timer_tasks.nodes + (timer_tasks.size)++) = new_task;
+	int task_exist = 0;
+	/* Проходим по всей очереди и смотрим, есть ли уже такая задача */
+	for (queue_node_t *current_task = timer_tasks.nodes; current_task < timer_tasks.nodes + timer_tasks.size; ++current_task){
+		if (current_task == &new_task) {
+			task_exist = 1;
+			break;
+		}
+	} 
+	/* Задача добавляется, если в очереди такой задачи пока нет */
+	if (!task_exist) {
+		*(timer_tasks.nodes + (timer_tasks.size)++) = new_task;
+	}
 	up(timer_tasks.nodes, timer_tasks.size - 1);
 	/* Восстанавливаем содержимое регистра флагов прерываний */
 	TIMSK = tmp_TIMSK;
@@ -117,20 +163,39 @@ queue_node_t pop_task()
 	return result;
 }
 
+void delete_task_from_queue(const TPTR task){
+	for (queue_node_t *current_task = timer_tasks.nodes; current_task < timer_tasks.nodes + timer_tasks.size; ++current_task){
+		if (current_task == &task) {
+			swap(current_task, timer_tasks.nodes + timer_tasks.size - 1);
+			*(timer_tasks.nodes + timer_tasks.size - 1) = timer_task_NULL;
+			down(current_task, --timer_tasks.size, 0);
+			break;
+		}
+	} 
+}
+
 void exec_top_task(){
 	/* Запуск задачи с верхушки очереди, если её current_tik == 0,
 	 * удаление её из очереди и добавление её в очередь, 
 	 * если num_tiks != 0 */
-	queue_node_t *top_timer_task = timer_tasks.nodes;
+	/* Запоминаем состояние регистра флагов прерываний */
+	uint8_t tmp_TIMSK = TIMSK;
+	/* Выключаем прерывание по таймеру, поскольку работаем с очередью задач таймера */
+	TIMSK &= ~(1 << TIMER_INTERRUPT_FLAG);
+ 	queue_node_t *top_timer_task = timer_tasks.nodes;
 	// Если стало 0, то добавить в очередь
-	if ((top_timer_task->func) && (!(top_timer_task->current_tik))) {
+	if (!(top_timer_task->current_tik)) {
 		queue_node_t node_for_repeat = pop_task();   // Создать переменную, содержащую такую же задачу
-		add_task(node_for_repeat.func);
-		if (node_for_repeat.num_tiks) { // Если num_tick, значит это повторяемая задача
-			node_for_repeat.current_tik = node_for_repeat.num_tiks; // Восстановить current_tik
-			add_new_task(node_for_repeat);  // Добавить созданную задачу в список задач таймера
+		if (node_for_repeat.func) {
+			add_task(node_for_repeat.func);
+			if (node_for_repeat.num_tiks) { // Если num_tick, значит это повторяемая задача
+				node_for_repeat.current_tik = node_for_repeat.num_tiks; // Восстановить current_tik
+				add_new_task(node_for_repeat);  // Добавить созданную задачу в список задач таймера
+			}
 		}
 	}
+	/* Восстанавливаем содержимое регистра флагов прерываний */
+	TIMSK = tmp_TIMSK;
 }
 
 /*TPTR pop_func()

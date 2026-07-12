@@ -20,7 +20,7 @@
 struct queue_node_t; 
 struct queue_t;
 
-void init_timer_queue();
+
 void start_timer0();
 void stop_timer0();
 //void add_timer_task(type_queue_node task);

@@ -3,16 +3,13 @@
 
 /* Определение режима отладки */
 //#define DEBUG_INT0
-#define F_CPU 16000000
+//#define F_CPU 16000000
 /* Именование портов ввода/вывода */
 //#define PORT_ENCODER PORTD
 #define PORT_LEDS_PINBOARD PORTD
 
 //#define DIRECT_ENCODER DDRD
 #define DIRECT_LEDS_PINBOARD DDRD
-
-
-
 
 #define PORT_LEDS_BOARD PORTA
 #define DIRECT_LEDS_BOARD DDRA

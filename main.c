@@ -18,10 +18,11 @@
 #include "init2_test.h"
 #include "button.h"
 #include "beeper.h"
+#include "timer_queue.h"
 
 //extern  int8_t number_flash_digit; // Номер мигающего разряда
 volatile typemode  mode;
-volatile uint8_t flags = 0x00;
+
 
 void init() {
 	/* Установка портов ввода/вывода */
@@ -41,8 +42,6 @@ int main(void)
 #if defined(PINBOARD) || defined(M16BOARD)
 	init_display();
 #endif
-	init_task_queue();
-	init_timer_queue();
 	//number_flash_digit = 0;
 	//init_test_timer_queue();
 	init();
@@ -51,6 +50,8 @@ int main(void)
 	init_port_button();
 	mode = viewclock;
 	init_encoder();
+	init_task_queue();
+	init_timer_queue();
 #ifdef DEBUG_INT0
 	init_test();
 #else 
@@ -58,11 +59,13 @@ int main(void)
 	start_timer1();
 #endif    
 #if defined(PINBOARD) || defined(M16BOARD)
-	add_new_task_with_delay(display_array, 40, 40);
+	/*add_new_task_with_delay(display_array, 40, 40);
 	add_new_task_with_delay(flash_digiting, 3000, 3000);
 	add_new_task_with_delay(flash_dot, 5000, 5000);
 	add_new_task_with_delay(reading_encoder, 2, 2);
-	add_new_task_with_delay(comp_time_alarm, 500, 500);
+	add_new_task_with_delay(comp_time_alarm, 500, 500);*/
+	init_timer_queue_with_tasks();
+	//add_new_task_with_delay(reading_encoder, 2, 2);
 #endif
 	/* Replace with your application code */
     while (1) 

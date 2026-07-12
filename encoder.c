@@ -5,6 +5,7 @@
 //#include "display.h"
 #include "clock.h"
 #include "RTOS.h"
+#include "timer_queue.h"
 #include "ctrl_timer.h"
 #include "encoder.h"
 
@@ -18,6 +19,14 @@ void init_encoder(){
 	PORT_ENCODER |= (1 << ENCODER_CHANNEL_A) | (1 << ENCODER_CHANNEL_B);
 }
 
+void enable_encoder(){
+	add_new_task_with_delay(reading_encoder,2,2);
+}
+
+void disable_encoder(){
+	init_timer_queue_with_tasks();
+}
+
 void reading_encoder(){
 	#define NUMBER_PAIRS_IN_BYTE 4 /* Количество пар бит в байте */
 	#define FLAG_IS_CHANGE 7
@@ -27,7 +36,8 @@ void reading_encoder(){
 	static uint8_t encoder_byte = 0x00;   /* Байт, состоящих из четырех пар принятых бит */
 	register uint8_t current_pair_bits = 0;
 	PORT_TEST |= (1 << ONE_PIN_TEST2);
-	if ((mode == setalarmminutes) || (mode == setalarmhours) || (mode == setclockminutes) || (mode == setclockhours)){
+	if ((mode == setalarmminutes) || (mode == setalarmhours) || (mode == setclockminutes) || (mode == setclockhours)
+		|| (mode == settimerminutes) || (mode == settimerhours)){
 		//stop_timer1();
 		current_pair_bits = 
 		  ((PIN_ENCODER & (1 << ENCODER_CHANNEL_A)) >> ENCODER_CHANNEL_A) | (((PIN_ENCODER & (1 << ENCODER_CHANNEL_B)) >> ENCODER_CHANNEL_B) << 1);
@@ -75,6 +85,12 @@ void reading_encoder(){
 						break;
 					case setalarmhours:
 						change_alarm_hour(direct_change);
+						break;	
+					case settimerminutes:
+						change_timer_minute(direct_change);
+						break;
+					case settimerhours:
+						change_timer_hour(direct_change);
 						break;	
 					default:
 					;

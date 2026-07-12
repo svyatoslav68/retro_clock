@@ -20,5 +20,7 @@
 
 void init_encoder();
 void reading_encoder();
+void enable_encoder();
+void disable_encoder();
 
 #endif // ENCODER_H

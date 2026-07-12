@@ -44,7 +44,7 @@ void task_manager(void)
 		/* если не пустышка, то сдвигаем все остальные задачи вверх, последнюю делаем пустышкой */
 		uint8_t index_dest, index_source;
 		for (index_dest = 0, index_source=1; index_dest < TASK_QUEUE_SIZE - 1; 
-															++index_dest, ++index_source){
+				++index_dest, ++index_source){
 			//if (task_queue[index_source]==idle) break;
 			task_queue[index_dest] = task_queue[index_source];
 		}
