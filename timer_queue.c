@@ -36,7 +36,7 @@ void init_timer_queue()
 void init_timer_queue_with_tasks()
 {
 	const queue_node_t display_task = {display_array, 30, 30};
-	const queue_node_t blinking_task = {flash_digiting, 3000, 3000};
+	//const queue_node_t blinking_task = {flash_digiting, 3000, 3000};
 	const queue_node_t blink_dot_task = {flash_dot, 5000, 5000};
 	const queue_node_t comp_time_task = {comp_time_alarm, 500, 500};
 	/* Запоминаем состояние регистра флагов прерываний */
@@ -46,8 +46,8 @@ void init_timer_queue_with_tasks()
 	init_timer_queue();
 	*(timer_tasks.nodes + (timer_tasks.size)++) = display_task;
 	up(timer_tasks.nodes, timer_tasks.size - 1);
-	*(timer_tasks.nodes + (timer_tasks.size)++) = blinking_task;
-	up(timer_tasks.nodes, timer_tasks.size - 1);
+	/**(timer_tasks.nodes + (timer_tasks.size)++) = blinking_task;
+	up(timer_tasks.nodes, timer_tasks.size - 1);*/
 	*(timer_tasks.nodes + (timer_tasks.size)++) = blink_dot_task;
 	up(timer_tasks.nodes, timer_tasks.size - 1);
 	*(timer_tasks.nodes + (timer_tasks.size)++) = comp_time_task;
@@ -164,14 +164,21 @@ queue_node_t pop_task()
 }
 
 void delete_task_from_queue(const TPTR task){
+	/* Запоминаем состояние регистра флагов прерываний */
+	uint8_t tmp_TIMSK = TIMSK;
+	/* Выключаем прерывание по таймеру, поскольку работаем с очередью задач таймера */
+	TIMSK &= ~(1 << TIMER_INTERRUPT_FLAG);
 	for (queue_node_t *current_task = timer_tasks.nodes; current_task < timer_tasks.nodes + timer_tasks.size; ++current_task){
 		if (current_task->func == task) {
-			swap(current_task, timer_tasks.nodes + timer_tasks.size - 1);
+			current_task->num_tiks = 0;
+			/*swap(current_task, timer_tasks.nodes + timer_tasks.size - 1);
 			*(timer_tasks.nodes + timer_tasks.size - 1) = timer_task_NULL;
 			down(current_task, --timer_tasks.size, 0);
-			break;
+			break;*/
 		}
 	} 
+	/* Восстанавливаем содержимое регистра флагов прерываний */
+	TIMSK = tmp_TIMSK;
 }
 
 void exec_top_task(){

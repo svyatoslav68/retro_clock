@@ -7,6 +7,7 @@
 #include "RTOS.h"
 #include "timer_queue.h"
 #include "ctrl_timer.h"
+#include "data_to_display.h"
 #include "encoder.h"
 
 extern typemode  mode;
@@ -21,11 +22,13 @@ void init_encoder(){
 
 void enable_encoder(){
 	add_new_task_with_delay(reading_encoder,2,2);
+	add_new_task_with_delay(flash_digiting, 3000, 3000);
 }
 
 void disable_encoder(){
 	//init_timer_queue_with_tasks();
-	//delete_task_from_queue(reading_encoder);
+	delete_task_from_queue(reading_encoder);
+	delete_task_from_queue(flash_digiting);
 }
 
 void reading_encoder(){
