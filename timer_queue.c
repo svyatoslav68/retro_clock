@@ -23,6 +23,7 @@ void swap (queue_node_t *first, queue_node_t *second);
 TPTR get_top_task();
 queue_node_t pop_task();
 
+void up(queue_node_t *queue, uint8_t i);
 
 void init_timer_queue()
 {
@@ -116,17 +117,25 @@ void add_new_task(const queue_node_t new_task)
 	TIMSK &= ~(1 << TIMER_INTERRUPT_FLAG);
 	int task_exist = 0;
 	/* Проходим по всей очереди и смотрим, есть ли уже такая задача */
-	for (queue_node_t *current_task = timer_tasks.nodes; current_task < timer_tasks.nodes + timer_tasks.size; ++current_task){
-		if (current_task == &new_task) {
+	queue_node_t *current_task;
+	//for (queue_node_t *current_task = timer_tasks.nodes; current_task < timer_tasks.nodes + timer_tasks.size; ++current_task){
+	uint8_t search_i;
+	for (search_i = 0; search_i < timer_tasks.size; ++search_i)	{
+		current_task = timer_tasks.nodes + search_i;
+		if (current_task->func == new_task.func) {
 			task_exist = 1;
 			break;
 		}
 	} 
 	/* Задача добавляется, если в очереди такой задачи пока нет */
-	if (!task_exist) {
-		*(timer_tasks.nodes + (timer_tasks.size)++) = new_task;
+	if (task_exist) {
+		current_task->current_tik = new_task.current_tik;
+		down(timer_tasks.nodes, timer_tasks.size, search_i);
 	}
-	up(timer_tasks.nodes, timer_tasks.size - 1);
+	else {
+		*(timer_tasks.nodes + (timer_tasks.size)++) = new_task;
+		up(timer_tasks.nodes, timer_tasks.size - 1);
+	}
 	/* Восстанавливаем содержимое регистра флагов прерываний */
 	TIMSK = tmp_TIMSK;
 }

@@ -22,7 +22,7 @@ void init_encoder(){
 }
 
 void enable_encoder(){
-	add_new_task_with_delay(reading_encoder,2,2);
+	add_new_task_with_delay(reading_encoder,3,3);
 	add_new_task_with_delay(flash_digiting, 3000, 3000);
 }
 

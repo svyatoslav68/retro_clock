@@ -10,8 +10,8 @@
 
 //#define FLAG_BUTTON 1
 
-#define DELAY_ANTIDREBEZG 100
-#define TIME_LONG_PRESS_BUTTON (10UL*3000UL) /* Продолжительность нажатия на кнопку, считающееся длительным. 1500 mc */
+#define DELAY_ANTIDREBEZG 300
+#define TIME_LONG_PRESS_BUTTON (10UL*2000UL) /* Продолжительность нажатия на кнопку, считающееся длительным. 1500 mc */
 
 #define DIRECT_BUTTONS DDRD
 #define PORT_BUTTONS PORTD
