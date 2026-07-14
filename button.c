@@ -17,6 +17,7 @@
 #include "clock.h"
 #include "beeper.h"
 #include "timer_queue.h"
+#include "test.h"
 //#include "tasks.h"
 
 
@@ -26,6 +27,18 @@
 
 static uint8_t flags_button = 0x00;
 extern typemode  mode;
+
+
+ISR (INT1_vect)
+{
+	/* Отключим прерывание. Включим после срабатывания таймера. */
+	GICR &= ~(1 << INT1);
+	PORT_TEST |= (1 << ONE_PIN_TEST2);
+	/* Прерывание от кнопки ставит в очередь процедуру чтения состояния кнопки, 
+	которая будет определеять состояние после задержки в 20мс */
+	queue_node_t read_button_after_delay = {read_button, DELAY_ANTIDREBEZG, 0};
+	add_new_task(read_button_after_delay);
+}
 
 void init_port_button(){
 	DIRECT_BUTTONS &= ~(1 << PIN_BUTTON);
@@ -146,6 +159,7 @@ void definition_longtime()
 		add_task(pisk);
         add_task(long_pressed_button);
     }
+	PORT_TEST &= ~(1 << ONE_PIN_TEST3);
 }
 
 void read_button()
@@ -170,8 +184,10 @@ void read_button()
 	}
     else {
 		flags_button |= (1 << FLAG_BUTTON_PRESSED);
+		PORT_TEST |= (1 << ONE_PIN_TEST3);
 		add_new_task_with_delay(definition_longtime, TIME_LONG_PRESS_BUTTON, 0);
     }
+	PORT_TEST &= ~(1 << ONE_PIN_TEST2);
 }
 
 

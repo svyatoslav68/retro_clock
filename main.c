@@ -42,10 +42,10 @@ int main(void)
 #endif
 	//number_flash_digit = 0;
 	//init_test_timer_queue();
-	init();
 	init_clock();
 	init_beeper();
 	init_port_button();
+	init();
 	mode = viewclock;
 	init_encoder();
 	init_task_queue();

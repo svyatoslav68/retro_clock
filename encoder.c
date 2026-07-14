@@ -9,6 +9,7 @@
 #include "ctrl_timer.h"
 #include "data_to_display.h"
 #include "encoder.h"
+#include "test.h"
 
 extern typemode  mode;
 int8_t count_encoder = 0; /* счетчик, который накручен енкодером */
@@ -39,7 +40,7 @@ void reading_encoder(){
 	static uint8_t equal_repeats = 0;     /* Количество повторов принятой комбинации двух бит */
 	static uint8_t encoder_byte = 0x00;   /* Байт, состоящих из четырех пар принятых бит */
 	register uint8_t current_pair_bits = 0;
-	PORT_TEST |= (1 << ONE_PIN_TEST2);
+	PORT_TEST |= (1 << ONE_PIN_TEST4);
 	if ((mode == setalarmminutes) || (mode == setalarmhours) || (mode == setclockminutes) || (mode == setclockhours)
 		|| (mode == settimerminutes) || (mode == settimerhours)){
 		//stop_timer1();
@@ -107,6 +108,6 @@ void reading_encoder(){
 		}
 		//start_timer1();
 	}  // if (mode)
-	PORT_TEST &= ~(1 << ONE_PIN_TEST2);
+	PORT_TEST &= ~(1 << ONE_PIN_TEST4);
 }
 

@@ -64,7 +64,7 @@ void display_array(void)
 	static uint8_t number_digit = 0; // Номер отображаемого разряда
 	uint8_t byte_data = 0x00;
 	displayed_number = 0x00;
-	PORT_TEST |= (1 << ONE_PIN_TEST3);
+	//PORT_TEST |= (1 << ONE_PIN_TEST3);
 	switch (mode){
 	 case viewclock:
 	 case setclockminutes:
@@ -103,7 +103,7 @@ void display_array(void)
 	if (++number_digit == NUMBER_DIGIT)
 		number_digit = 0;
 	//add_new_task_with_delay(&timer_tasks, display_array, 50);
-	PORT_TEST &= ~(1 << ONE_PIN_TEST3);
+	//PORT_TEST &= ~(1 << ONE_PIN_TEST3);
 }
 
 void flash_dot (){

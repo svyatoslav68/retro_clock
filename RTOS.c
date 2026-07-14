@@ -26,7 +26,7 @@ void init_task_queue(void){
 void task_manager(void) 
 {
 	uint8_t reg_status = 0;
-	PORT_TEST |= (1 << ONE_PIN_TEST4);
+	//PORT_TEST |= (1 << ONE_PIN_TEST4);
 	/* Объявляем переменную указатель на функцию, в которую будем помещать задачи из очереди */
 	TPTR task_for_execute = idle;
 	/* Запоминаем регистр состояний контроллера */ 
@@ -53,7 +53,7 @@ void task_manager(void)
 	end_function:
 	/* Восстанавливаем бит прерываний */
 	SREG = reg_status;
-	PORT_TEST &= ~(1 << ONE_PIN_TEST4);
+	//PORT_TEST &= ~(1 << ONE_PIN_TEST4);
 }
 
 void add_task(TPTR TS)

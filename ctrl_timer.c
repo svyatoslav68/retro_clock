@@ -10,6 +10,7 @@
 #include "ctrl_timer.h"
 #include "init2_test.h"
 #include "timer_queue.h"
+#include "test.h"
 
 extern queue_node_t timer_queue[];//[TIMER_QUEUE_SIZE];
 extern queue_t timer_tasks;
@@ -60,13 +61,3 @@ ISR(TIMER0_COMP_vect) {
 #endif
 }
 
-
-ISR (INT1_vect)
-{
-	/* Отключим прерывание. Включим после срабатывания таймера. */
-	GICR &= ~(1 << INT1);
-	/* Прерывание от кнопки ставит в очередь процедуру чтения состояния кнопки, 
-	которая будет определеять состояние после задержки в 20мс */
-	queue_node_t read_button_after_delay = {read_button, DELAY_ANTIDREBEZG, 0};
-	add_new_task(read_button_after_delay);
-}
