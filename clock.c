@@ -53,8 +53,9 @@ void start_timer1(){
 	TCNT1 = 0x00; // Сброс счетчика
 	TCCR1B |= (1 << WGM12);// | (1 << WGM10); // Установка режима СТС
 	OCR1A = 60UL; // Счетчик секундный, поэтому после 60 секунд сброс счетчика
-	TIFR = (1 << OCF1A);
-	TIMSK |= (1 << OCIE1A); // Разрешение прерывания по достижению значения сравнения
+    OCR1B = 1UL;
+	TIFR = (1 << OCF1A)|(1 << OCF1B);
+	TIMSK |= (1 << OCIE1A)|(1 << OCIE1B); // Разрешение прерывания по достижению значения сравнения
 	TCCR1B |= CLOCK_SELECT_BITS_TIMER1;     // Установка счёта с внешнего источника по спаду
 }
 
@@ -99,7 +100,7 @@ ISR(TIMER1_COMPA_vect) {
 			flags |= (1 <<FLAG_NOTALARM);
 		}
 	}
-	if ((mode != settimerminutes)&&(mode != settimerhours)&&(mode != alarm) && (mode != notalarm) && !(PIN_CTRL_TIMER & (1 << PIN_ON_TIMER))) {
+	if ((mode != settimerminutes)&&(mode != settimerhours)&&(mode != alarm) && (mode != notalarm) && !(PIN_CTRL_TIMER & (1 << PIN_ON_TIMER_MINUTE))) {
 		/* dec_timer_minute(); */
 		if (--*(timer_array + 1) == -1) {
 			*(timer_array + 1) = 59;
@@ -109,12 +110,27 @@ ISR(TIMER1_COMPA_vect) {
 		}
 		/* -------------------------------*/
 		if ((timer_array[0] == 0) && (timer_array[1] == 0)){
-			flags |= (1 << FLAG_TIMER);
-			flags &= ~(1 <<FLAG_NOTTIMER);
+			flags |= (1 << flag_timer);
+			flags &= ~(1 <<flag_nottimer);
 		}
 	}
 }
 
+ISR(TIMER1_COMPB_vect) {
+}
+	if ((mode != settimerminutes)&&(mode != settimerhours)&&(mode != alarm) && (mode != notalarm) && !(PIN_CTRL_TIMER & (1 << PIN_ON_TIMER_SECUNDA))) {
+		if (--*(timer_array + 1) == -1) {
+			*(timer_array + 1) = 59;
+			if (--(*timer_array) == -1)	{
+				*timer_array = 0x00;
+			}
+		}
+		/* -------------------------------*/
+		if ((timer_array[0] == 0) && (timer_array[1] == 0)){
+			flags |= (1 << flag_timer);
+			flags &= ~(1 <<flag_nottimer);
+		}
+    }
 
 void change_minute(int8_t direct){
 	*(clock_array + 1) += direct;	
