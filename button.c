@@ -57,10 +57,14 @@ void clicked_button2()
 		case viewalarm:
 		 mode = viewtimer;
 		 break;
+		case alarmtimer:
+		 beeper_off();
+		 mode = viewtimer;
+		 break;
 		case viewtimer:
 		 beeper_off();
 		 mode = viewclock;
-		 init_clock();
+		 //init_clock();
 		 break;
 		case setclockminutes:
 			mode = setclockhours;
@@ -117,6 +121,7 @@ void long_pressed_button()
 			break;
 		case viewtimer:
 			mode = settimerminutes;
+			init_clock();
 			enable_encoder();
 			next_flash_digit();
 			break;

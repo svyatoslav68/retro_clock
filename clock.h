@@ -27,6 +27,7 @@ typedef enum {viewclock,  // отображение часов
 			  settimerminutes, // установка часов таймера
 			  settimerhours, // установка минут таймера
 			  alarm,		// звучание будильника
+			  alarmtimer,   // Звучание таймера
 			  notalarm	// остановка будильника
 			  } typemode;
 

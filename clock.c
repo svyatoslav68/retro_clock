@@ -30,8 +30,8 @@ extern typemode  mode;
 volatile uint8_t flags = 0x00;
 
 void init_port_timer(){
-	DIRECT_CTRL_TIMER &= ~(1 << PIN_ON_TIMER);
-	PORT_CTRL_TIMER |= (1 << PIN_ON_TIMER);
+	DIRECT_CTRL_TIMER &= ~((1 << PIN_ON_TIMER_MINUTE)|(1 << PIN_ON_TIMER_SECUNDA));
+	PORT_CTRL_TIMER |= (1 << PIN_ON_TIMER_MINUTE)|(1 << PIN_ON_TIMER_SECUNDA);
 }
 
 void init_clock(){
@@ -44,7 +44,16 @@ void save_alarm_to_eeprom(){
 }
 
 void save_timer_to_eeprom(){
-	eeprom_write_block((void *)timer_array, (void *)eeprom_timer, LENGTH_ARRAY);
+	/* Запоминание установленного значения в EEPROM.
+	Запоминание происходит только, если запоминаемое значение отличается от уже запомненного */
+	uint8_t old_timer_array[LENGTH_ARRAY] = {0, 0};
+	eeprom_read_block((void *)old_timer_array, (void *)eeprom_timer, LENGTH_ARRAY);
+	for (uint8_t i = 0; i < LENGTH_ARRAY; i++) {
+		if (old_timer_array[i] != timer_array[i]){
+			eeprom_write_block((void *)timer_array, (void *)eeprom_timer, LENGTH_ARRAY);
+			break;
+		}
+	}
 }
 
 //void inc_clock_minute();
@@ -54,8 +63,8 @@ void start_timer1(){
 	TCCR1B |= (1 << WGM12);// | (1 << WGM10); // Установка режима СТС
 	OCR1A = 60UL; // Счетчик секундный, поэтому после 60 секунд сброс счетчика
     OCR1B = 1UL;
-	TIFR = (1 << OCF1A)|(1 << OCF1B);
-	TIMSK |= (1 << OCIE1A)|(1 << OCIE1B); // Разрешение прерывания по достижению значения сравнения
+	TIFR = (1 << OCF1A);//|(1 << OCF1B);
+	TIMSK |= (1 << OCIE1A);//|(1 << OCIE1B); // Разрешение прерывания по достижению значения сравнения
 	TCCR1B |= CLOCK_SELECT_BITS_TIMER1;     // Установка счёта с внешнего источника по спаду
 }
 
@@ -110,15 +119,15 @@ ISR(TIMER1_COMPA_vect) {
 		}
 		/* -------------------------------*/
 		if ((timer_array[0] == 0) && (timer_array[1] == 0)){
-			flags |= (1 << flag_timer);
-			flags &= ~(1 <<flag_nottimer);
+			flags |= (1 << FLAG_TIMER);
+			flags &= ~(1 << FLAG_NOTTIMER);
 		}
 	}
 }
 
-ISR(TIMER1_COMPB_vect) {
-}
-	if ((mode != settimerminutes)&&(mode != settimerhours)&&(mode != alarm) && (mode != notalarm) && !(PIN_CTRL_TIMER & (1 << PIN_ON_TIMER_SECUNDA))) {
+ISR(INT2_vect) {
+	if ((mode != settimerminutes)&&(mode != settimerhours)&&(mode != alarm) && (mode != notalarm) &&
+	     (mode != alarmtimer) && !(PIN_CTRL_TIMER & (1 << PIN_ON_TIMER_SECUNDA))) {
 		if (--*(timer_array + 1) == -1) {
 			*(timer_array + 1) = 59;
 			if (--(*timer_array) == -1)	{
@@ -127,10 +136,11 @@ ISR(TIMER1_COMPB_vect) {
 		}
 		/* -------------------------------*/
 		if ((timer_array[0] == 0) && (timer_array[1] == 0)){
-			flags |= (1 << flag_timer);
-			flags &= ~(1 <<flag_nottimer);
+			flags |= (1 << FLAG_TIMER);
+			flags &= ~(1 << FLAG_NOTTIMER);
 		}
     }
+}
 
 void change_minute(int8_t direct){
 	*(clock_array + 1) += direct;	
@@ -207,6 +217,6 @@ void comp_time_alarm(){
 	if (flags & (1 << FLAG_TIMER)){
 		beeper_on();
 		flags &= ~(1 << FLAG_TIMER);
-		mode = viewtimer;
+		mode = alarmtimer;
 	}
 }
