@@ -38,9 +38,9 @@ void reading_encoder(){
 	static uint8_t flags_encoder = 0x00;
 	static uint8_t prev_pair_bits = 0x03;
 	static uint8_t equal_repeats = 0;     /* Количество повторов принятой комбинации двух бит */
+	//PORT_TEST |= (1 << ONE_PIN_TEST2);
 	static uint8_t encoder_byte = 0x00;   /* Байт, состоящих из четырех пар принятых бит */
 	register uint8_t current_pair_bits = 0;
-	PORT_TEST |= (1 << ONE_PIN_TEST4);
 	if ((mode == setalarmminutes) || (mode == setalarmhours) || (mode == setclockminutes) || (mode == setclockhours)
 		|| (mode == settimerminutes) || (mode == settimerhours)){
 		//stop_timer1();
@@ -54,60 +54,62 @@ void reading_encoder(){
 			equal_repeats = 0;
 		}
 		prev_pair_bits = current_pair_bits;
-		if ((equal_repeats == NUMBER_RIGHT_VALUE) && (flags_encoder & (1 << FLAG_IS_CHANGE))){
-			flags_encoder &= ~(1 << FLAG_IS_CHANGE);
-			++flags_encoder;
-			encoder_byte = (encoder_byte << 2);
-			encoder_byte |= current_pair_bits;
-			if ((flags_encoder & 0x07) == NUMBER_PAIRS_IN_BYTE){
-				int8_t direct_change = 0;
-				switch (encoder_byte) {
-					case 0x4b:
-					case 0x2c:
-					case 0xb4:
-					case 0xc2:
-					 direct_change = -1;
-					 break;
-					case 0x1e:
-					case 0x78:
-					case 0xe1:
-					case 0x87:
-					 direct_change = 1;
-					 break;
-					default:
-					 direct_change = 0;
-					;
+		if (equal_repeats == NUMBER_RIGHT_VALUE) {
+			if (flags_encoder & (1 << FLAG_IS_CHANGE)){
+				flags_encoder &= ~(1 << FLAG_IS_CHANGE);
+				++flags_encoder;
+				encoder_byte = (encoder_byte << 2);
+				encoder_byte |= current_pair_bits;
+				if ((flags_encoder & 0x07) == NUMBER_PAIRS_IN_BYTE){
+					int8_t direct_change = 0;
+					switch (encoder_byte) {
+						case 0x4b:
+						case 0x2d:
+						case 0xb4:
+						case 0xd2:
+						 direct_change = -1;
+						 break;
+						case 0x1e:
+						case 0x78:
+						case 0xe1:
+						case 0x87:
+						 direct_change = 1;
+						 break;
+						default:
+						 direct_change = 0;
+						;
+					}
+					if (direct_change)
+					switch (mode) {						
+						case setclockminutes:
+							change_minute(direct_change);
+							break;
+						case setclockhours:
+							change_hour(direct_change);
+							break;
+						case setalarmminutes:
+							change_alarm_minute(direct_change);
+							break;
+						case setalarmhours:
+							change_alarm_hour(direct_change);
+							break;	
+						case settimerminutes:
+							change_timer_minute(direct_change);
+							break;
+						case settimerhours:
+							change_timer_hour(direct_change);
+							break;	
+						default:
+						;
+					}
+					//prev_pair_bits = 0xff;
+					encoder_byte = 0x00;
+					flags_encoder &= 0b11111000;
 				}
-				switch (mode) {
-					case setclockminutes:
-						change_minute(direct_change);
-						break;
-					case setclockhours:
-						change_hour(direct_change);
-						break;
-					case setalarmminutes:
-						change_alarm_minute(direct_change);
-						break;
-					case setalarmhours:
-						change_alarm_hour(direct_change);
-						break;	
-					case settimerminutes:
-						change_timer_minute(direct_change);
-						break;
-					case settimerhours:
-						change_timer_hour(direct_change);
-						break;	
-					default:
-					;
-				}
-				prev_pair_bits = 0xff;
-				equal_repeats = 0;
-				encoder_byte = 0x00;
-				flags_encoder &= 0b11111000;
 			}
+			equal_repeats = 0;
 		}
 		//start_timer1();
 	}  // if (mode)
-	PORT_TEST &= ~(1 << ONE_PIN_TEST4);
 }
 

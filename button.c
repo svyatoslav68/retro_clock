@@ -33,7 +33,7 @@ ISR (INT1_vect)
 {
 	/* Отключим прерывание. Включим после срабатывания таймера. */
 	GICR &= ~(1 << INT1);
-	PORT_TEST |= (1 << ONE_PIN_TEST2);
+	//PORT_TEST |= (1 << ONE_PIN_TEST2);
 	/* Прерывание от кнопки ставит в очередь процедуру чтения состояния кнопки, 
 	которая будет определеять состояние после задержки в 20мс */
 	queue_node_t read_button_after_delay = {read_button, DELAY_ANTIDREBEZG, 0};
@@ -189,11 +189,11 @@ void read_button()
 	}
     else {
 		flags_button |= (1 << FLAG_BUTTON_PRESSED);
-		PORT_TEST &= ~(1 << ONE_PIN_TEST3);
-		PORT_TEST |= (1 << ONE_PIN_TEST3);
+		/*PORT_TEST &= ~(1 << ONE_PIN_TEST3);
+		PORT_TEST |= (1 << ONE_PIN_TEST3);*/
 		add_new_task_with_delay(definition_longtime, TIME_LONG_PRESS_BUTTON, 0);
     }
-	PORT_TEST &= ~(1 << ONE_PIN_TEST2);
+	//PORT_TEST &= ~(1 << ONE_PIN_TEST2);
 }
 
 

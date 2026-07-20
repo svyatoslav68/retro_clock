@@ -8,7 +8,7 @@
 #define ENCODER_CHANNEL_A PORTD1
 #define ENCODER_CHANNEL_B PORTD0
 
-#define NUMBER_RIGHT_VALUE 4
+#define NUMBER_RIGHT_VALUE 5
 #define NUMBER_FOR_END_ROTATION 20
 
 void init_encoder();

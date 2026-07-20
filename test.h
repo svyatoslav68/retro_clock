@@ -15,9 +15,9 @@
 
 /* Пины для отладки */
 #define ONE_PIN_TEST1 PORTD4  /* Таймер от менеджера задач таймера */
-#define ONE_PIN_TEST2 PORTD5  /* Короткая кнопка */
-#define ONE_PIN_TEST3 PORTD6  /* Длинная кнопка */
-#define ONE_PIN_TEST4 PORTD7
+#define ONE_PIN_TEST2 PORTD5  /* Изменение положения энкодера */
+#define ONE_PIN_TEST3 PORTD6  /* Изменение значений энкодером */
+#define ONE_PIN_TEST4 PORTD7  /* reading_encoder() */
 
 
 
